@@ -12,5 +12,5 @@ class Rook(Piece):
 
     def __str__(self):
         return f"""
-        Rook. Coordinates: {self.column}{self.row}
+        Rook. Coordinates: [{self.row}][{self.column}]
         """
