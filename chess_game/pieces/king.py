@@ -10,34 +10,36 @@ class King(Piece):
         Piece.__init__(self, color, row, column, board)
         self.offsets = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
 
-    def generate_possible_moves(self):
-        #can't move to a threatened square by enemy
-        #can't move to a occupied ally square
-        #generate set of moves for all enemy pieces, generate set of possible moves for king
-        #remove all possible moves that are being threatened
+    def generate_legal_moves(self):
         possible_moves = []
+        opposite_color = "B" if self.color == "W" else "W"
 
-        for x_offset, y_offset in self.offsets:
-            curr_row, curr_column = self.row + y_offset, self.column + x_offset
+        for row_offset, col_offset in self.offsets:
+            curr_row, curr_column = self.row + row_offset, self.column + col_offset
 
             if curr_row < 0 or curr_row >= 8 or curr_column < 0 or curr_column >= 8:
                 continue
-            elif self.board[curr_row][curr_column]:
-                possible_moves.append((curr_row, curr_column))
+            elif self.board.is_occupied(curr_row, curr_column):
+                if self.board.get_piece_color(curr_row, curr_column) != self.color:
+                    possible_moves.append((curr_row, curr_column))
             else:
                 possible_moves.append((curr_row, curr_column))
-                curr_row, curr_column = curr_row + y_offset, curr_column + x_offset
         
-        return possible_moves
+        threatened_squares = self.board.get_threatened_squares(opposite_color)
+        legal_moves = []
+        for move in possible_moves:
+            if move not in threatened_squares:
+                legal_moves.append(move)
 
-    def generate_legal_moves(self):
-        pass
-
-    def get_threatened_squares(self):
-        pass
+        return legal_moves
 
     def is_attacked(self):
-        pass
+        opposite_color = "B" if self.color == "W" else "W"
+        threatened_squares = self.board.get_threatened_squares(opposite_color)
+
+        if (self.row, self.column) in threatened_squares:
+            return True
+        return False
 
     def __str__(self):
         return f"""

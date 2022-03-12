@@ -4,7 +4,7 @@ from board import Board
 
 class TestSum(unittest.TestCase):
 
-    def test_bishop_no_movement(self):
+    def test_no_movement(self):
         board = Board()
 
         bishop1 = Bishop("W", 7, 0, board)
@@ -15,7 +15,7 @@ class TestSum(unittest.TestCase):
 
         self.assertEqual(bishop1.generate_legal_moves(), [], "Should be empty array")
 
-    def test_bishop_capture(self):
+    def test_capture(self):
         board = Board()
 
         bishop1 = Bishop("W", 7, 0, board)
@@ -26,7 +26,7 @@ class TestSum(unittest.TestCase):
 
         self.assertEqual(bishop1.generate_legal_moves(), [(6, 1)], "Should be [(6, 1)]")
     
-    def test_bishop_capture_and_move(self):
+    def test_capture_and_move(self):
         board = Board()
 
         bishop1 = Bishop("W", 6, 1, board)
@@ -47,7 +47,7 @@ class TestSum(unittest.TestCase):
         board = Board()
 
         bishop1 = Bishop("W", 7, 7, board)
-        
+
         board.add_piece(bishop1, 7, 7)
 
         self.assertEqual(bishop1.generate_legal_moves(), 

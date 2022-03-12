@@ -1,19 +1,22 @@
 from .piece import Piece
 
-class Pawn(Piece):
+class WhitePawn(Piece):
 
     """
-    Class that represents a Pawn.
+    Class that represents a white Pawn.
     """
 
     def __init__(self, color, row, column, board):
         Piece.__init__(self, color, row, column, board)
+        self.offset = [(1, 1), (1, -1)]
 
     def generate_legal_moves(self):
-        #if black, can move down 2 on the 7th rank
-        #if white, can move up two on the 2nd rank (change this to fit array indexing)
-        #if on the 7th or second rank, can promote to another piece
-        #can capture diagonally
+        possible_moves = []
+        curr_row, curr_column = self.row, self.column
+        
+        pass
+
+    def threatened_squares(self):
         pass
 
     def promote(self):

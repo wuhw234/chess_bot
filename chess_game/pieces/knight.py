@@ -13,8 +13,8 @@ class Knight(Piece):
     def generate_legal_moves(self):
         possible_moves = []
 
-        for x_offset, y_offset in self.offsets:
-            curr_row, curr_column = self.row + y_offset, self.column + x_offset
+        for row_offset, col_offset in self.offsets:
+            curr_row, curr_column = self.row + row_offset, self.column + col_offset
 
             if curr_row < 0 or curr_row >= 8 or curr_column < 0 or curr_column >= 8:
                 continue
@@ -25,7 +25,7 @@ class Knight(Piece):
                 possible_moves.append((curr_row, curr_column))
         
         return possible_moves
-
+        
     def __str__(self):
         return f"""
         Knight. Coordinates: [{self.row}][{self.column}]

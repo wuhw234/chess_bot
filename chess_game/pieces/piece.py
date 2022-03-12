@@ -31,14 +31,13 @@ class Piece:
         
         return possible_moves
 
+    def threatened_squares(self):
+        return self.generate_legal_moves()
+
     def move(self, new_row, new_column):
         self.column = new_column
         self.row = new_row
         self.board.move_piece(new_row, new_column)
-
-    
-    def can_move(self):
-        pass
 
     def get_color(self):
         return self.color

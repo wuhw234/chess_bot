@@ -23,6 +23,19 @@ class Board:
     def move_piece(self, piece, row, column):
         self.board[row][column] = piece
 
+    def get_threatened_squares(self, color):
+        threatened_squares = set()
+        for row in range(0, 8):
+            for column in range(0, 8):
+                if self.is_occupied(row, column) and self.get_piece_color(row, column) == color:
+                    piece = self.board[row][column]
+                    threatened = piece.threatened_squares()
+
+                    for square in threatened:
+                        threatened_squares.add(square)
+        
+        return threatened_squares
+
     def generate_random(self):
         pass
 
