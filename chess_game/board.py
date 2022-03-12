@@ -20,7 +20,17 @@ class Board:
         except:
             print("Square is not occupied!")
 
-    def move_piece(self, piece, row, column):
+    def move_piece(self, piece, start_row, start_column, row, column):
+        if not self.is_occupied(start_row, start_column):
+            return
+        
+        piece = self.board[start_row][start_column]
+        legal_moves = piece.generate_legal_moves()
+
+        if (row, column) not in legal_moves:
+            return
+            
+        self.board[start_row][start_column] = 0
         self.board[row][column] = piece
 
     def get_threatened_squares(self, color):

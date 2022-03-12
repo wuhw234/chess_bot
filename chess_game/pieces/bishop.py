@@ -14,3 +14,6 @@ class Bishop(Piece):
         return f"""
         Bishop. Coordinates: [{self.row}][{self.column}]
         """
+
+    def get_symbol(self):
+        return self.color + "b"

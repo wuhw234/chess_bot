@@ -45,3 +45,6 @@ class King(Piece):
         return f"""
         King. Coordinates: [{self.row}][{self.column}]
         """
+    
+    def get_symbol(self):
+        return self.color + "k"

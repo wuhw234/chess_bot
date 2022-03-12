@@ -14,3 +14,6 @@ class Queen(Piece):
         return f"""
         Queen. Coordinates: [{self.row}][{self.column}]
         """
+    
+    def get_symbol(self):
+        return self.color + "q"

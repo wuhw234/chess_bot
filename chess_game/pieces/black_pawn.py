@@ -24,3 +24,5 @@ class BlackPawn(Piece):
         return f"""
         Pawn. Coordinates: [{self.row}][{self.column}]
         """
+    def get_symbol(self):
+        return self.color + "p"

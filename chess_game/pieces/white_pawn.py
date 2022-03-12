@@ -8,7 +8,8 @@ class WhitePawn(Piece):
 
     def __init__(self, color, row, column, board):
         Piece.__init__(self, color, row, column, board)
-        self.offset = [(1, 1), (1, -1)]
+        self.capture_offset = [(1, 1), (1, -1)]
+        self.offset = [(1, 0)]
 
     def generate_legal_moves(self):
         possible_moves = []
@@ -26,3 +27,6 @@ class WhitePawn(Piece):
         return f"""
         Pawn. Coordinates: [{self.row}][{self.column}]
         """
+    
+    def get_symbol(self):
+        return self.color + "p"

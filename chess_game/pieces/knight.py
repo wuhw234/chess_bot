@@ -25,8 +25,11 @@ class Knight(Piece):
                 possible_moves.append((curr_row, curr_column))
         
         return possible_moves
-        
+
     def __str__(self):
         return f"""
         Knight. Coordinates: [{self.row}][{self.column}]
         """
+    
+    def get_symbol(self):
+        return self.color + "n"

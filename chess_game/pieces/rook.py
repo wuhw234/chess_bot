@@ -14,3 +14,6 @@ class Rook(Piece):
         return f"""
         Rook. Coordinates: [{self.row}][{self.column}]
         """
+
+    def get_symbol(self):
+        return self.color + "r"
