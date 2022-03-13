@@ -32,9 +32,6 @@ class BlackPawn(Piece):
             not self.board.is_occupied(self.row - 2, self.column):
             possible_moves.append((self.row - 2, self.column))
         
-        threatened = self.threatened_squares()
-        possible_moves.extend(threatened)
-        
         return possible_moves
         
 
