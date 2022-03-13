@@ -12,10 +12,17 @@ DIMENSION = 8
 class GameState:
 
     def __init__(self):
-        self.white_turn = True
+        self.turn = "W"
         self.board = Board()
         self.movelog = []
         self.generate_standard()
+
+    def get_turn(self):
+        return self.turn
+
+    def make_move(self, piece, start_row, start_column, end_row, end_column):
+        self.movelog.append(f"{piece.get_symbol()}: {start_row}{start_column}-{end_row}{end_column}")
+        self.turn = "W" if self.turn == "B" else "B"
 
     def generate_standard(self):
         white_rook_1, white_rook_2 = Rook("W", 0, 0, self.board), Rook("W", 0, 7, self.board)

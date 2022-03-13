@@ -40,18 +40,20 @@ class Board:
     def move_piece(self, piece, start_row, start_column, row, column):
         print(piece, start_row, start_column, row, column)
         if not self.is_occupied(start_row, start_column) or not piece:
-            return
+            return False
         
         piece = self.board[start_row][start_column]
         legal_moves = piece.generate_legal_moves()
 
         if (row, column) not in legal_moves:
-            return
+            return False
             
         self.board[start_row][start_column] = 0
         self.board[row][column] = piece
         piece.set_row(row)
         piece.set_column(column)
+
+        return True
 
     def get_threatened_squares(self, color):
         threatened_squares = set()

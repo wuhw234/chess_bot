@@ -39,7 +39,8 @@ def main():
                     player_clicks = []
                 else:
                     selected_square = (row, col)
-                    if len(player_clicks) == 1 or board.is_occupied(row, col):
+                    if len(player_clicks) == 1 or (board.is_occupied(row, col) and 
+                        board.get_piece_color(row, col) == game_state.get_turn()):
                         player_clicks.append(selected_square)
                         print(player_clicks)
                     
@@ -47,9 +48,13 @@ def main():
                     start_row, start_column = player_clicks[0][0], player_clicks[0][1]
                     end_row, end_column = player_clicks[1][0], player_clicks[1][1]
                     piece = board.get_square(start_row, start_column)
-                    board.move_piece(piece, start_row, start_column, end_row, end_column)
+                    successful = board.move_piece(piece, start_row, start_column, end_row, end_column)
+                    if successful:
+                        game_state.make_move(piece, start_row, start_column, end_row, end_column)
+
                     selected_square = ()
                     player_clicks = []
+
         draw_game_state(screen, game_state)
         clock.tick(MAX_FPS)
         p.display.flip()
