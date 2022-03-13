@@ -11,6 +11,18 @@ class King(Piece):
         self.offsets = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
 
     def generate_legal_moves(self):
+        possible_moves = self.threatened_squares()
+        opposite_color = "B" if self.color == "W" else "W"
+        
+        enemy_threatened_squares = self.board.get_threatened_squares(opposite_color)
+        legal_moves = []
+        for move in possible_moves:
+            if move not in enemy_threatened_squares:
+                legal_moves.append(move)
+
+        return legal_moves
+
+    def threatened_squares(self):
         possible_moves = []
         opposite_color = "B" if self.color == "W" else "W"
 
@@ -24,14 +36,8 @@ class King(Piece):
                     possible_moves.append((curr_row, curr_column))
             else:
                 possible_moves.append((curr_row, curr_column))
-        
-        threatened_squares = self.board.get_threatened_squares(opposite_color)
-        legal_moves = []
-        for move in possible_moves:
-            if move not in threatened_squares:
-                legal_moves.append(move)
 
-        return legal_moves
+        return possible_moves
 
     def is_attacked(self):
         opposite_color = "B" if self.color == "W" else "W"
