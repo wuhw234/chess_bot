@@ -33,30 +33,28 @@ class GameState:
                                 [(start_row, start_column), (end_row, end_column)]])
             self.turn = "W" if self.turn == "B" else "B"
 
+            return True
+        return False
+
 
     def get_board(self):
         return self.board
 
-    # def is_checked(self, color):
-    #     if color == "W":
-    #         return self.white_king.is_attacked()
-    #     else:
-    #         return self.black_king.is_attacked()
+    def is_checked(self):
+        if self.turn == "W":
+            return self.board.white_king.is_attacked()
+        else:
+            return self.board.black_king.is_attacked()
 
-    # def is_checkmated(self, color):
-    #     #criteria for checkmate: no legal moves for king to move, no legal way to take offending piece,
-    #     #no legal way to block
-
-    #     #generate all legal moves, see if anything can take the previous move's square
-
-    #     if color == "W":
-    #         if self.white_king.is_attacked() and not self.white_king.generate_legal_moves():
-    #             return True
-    #         return False
-    #     else:
-    #         if self.black_king.is_attacked() and not self.black_king.generate_legal_moves():
-    #             return True
-    #         return False
+    def is_checkmated(self):
+        if self.turn == "W":
+            if self.is_checked() and not self.board.get_all_legal_moves("W"):
+                return True
+            return False
+        else:
+            if self.is_checked() and not self.board.get_all_legal_moves("B"):
+                return True
+            return False
 
     def is_stalemated(self, color):
         pass

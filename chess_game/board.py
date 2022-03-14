@@ -44,7 +44,6 @@ class Board:
         
         piece = self.get_square(start_row, start_column)
         legal_moves = piece.generate_legal_moves()
-        print(legal_moves)
 
         if (end_row, end_column) not in legal_moves:
             return False
@@ -93,14 +92,17 @@ class Board:
         self.add_pieces(black_pieces)
         self.add_pieces(black_pawns)
 
+        self.white_king = white_king
+        self.black_king = black_king
+
     def get_all_legal_moves(self, color):
         legal_moves = []
         for i in range(0, DIMENSION):
             for j in range(0, DIMENSION):
-                piece = self.get_square() 
-                if piece and piece.get_color == color:
+                piece = self.get_square(i, j) 
+                if piece and piece.get_color() == color:
                     legal_moves.extend(piece.generate_legal_moves())
-        
+        print(legal_moves)
         return legal_moves
 
     def __str__(self):
