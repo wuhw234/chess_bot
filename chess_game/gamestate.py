@@ -20,9 +20,8 @@ class GameState:
         return self.turn
 
     #TODO
-    def make_move(self, piece, start_row, start_column, end_row, end_column):
-        successful = self.board.attempt_move(piece, start_row, start_column, end_row, end_column)
-        
+    def log_move(self, piece, start_row, start_column, end_row, end_column):
+        successful = self.board.make_move(piece, start_row, start_column, end_row, end_column)
         if successful:
             start_piece = piece
             end_square = self.board.get_square(end_row, end_column)

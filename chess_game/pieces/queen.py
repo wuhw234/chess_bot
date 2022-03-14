@@ -6,8 +6,8 @@ class Queen(Piece):
     Class that represents a Queen.
     """
 
-    def __init__(self, color, row, column, board):
-        Piece.__init__(self, color, row, column, board)
+    def __init__(self, color, row, column, king, board):
+        Piece.__init__(self, color, row, column, king, board)
         self.offsets = [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1)]
 
     def __str__(self):

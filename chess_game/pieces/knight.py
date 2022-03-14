@@ -6,8 +6,8 @@ class Knight(Piece):
     Class that represents a Knight.
     """
 
-    def __init__(self, color, row, column, board):
-        Piece.__init__(self, color, row, column, board)
+    def __init__(self, color, row, column, king, board):
+        Piece.__init__(self, color, row, column, king, board)
         self.offsets = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
 
     def generate_legal_moves(self):
@@ -24,7 +24,8 @@ class Knight(Piece):
             else:
                 possible_moves.append((curr_row, curr_column))
         
-        return possible_moves
+        legal_moves = self.filter_checks_and_pins(possible_moves)
+        return legal_moves
 
     def threatened_squares(self):
         possible_moves = []

@@ -49,7 +49,7 @@ def main():
                     start_row, start_column = player_clicks[0][0], player_clicks[0][1]
                     end_row, end_column = player_clicks[1][0], player_clicks[1][1]
                     piece = board.get_square(start_row, start_column)
-                    game_state.make_move(piece, start_row, start_column, end_row, end_column)
+                    game_state.log_move(piece, start_row, start_column, end_row, end_column)
                     curr_color = game_state.get_turn()
                     # if game_state.is_checkmated(curr_color):
                     #     print("wpgg")

@@ -6,8 +6,8 @@ class BlackPawn(Piece):
     Class that represents a black Pawn.
     """
 
-    def __init__(self, color, row, column, board):
-        Piece.__init__(self, color, row, column, board)
+    def __init__(self, color, row, column, king, board):
+        Piece.__init__(self, color, row, column, king, board)
         self.offsets = [(-1, 0)]
         self.capture_offsets = [(-1, 1), (-1, -1)]
 
@@ -32,7 +32,8 @@ class BlackPawn(Piece):
             not self.board.is_occupied(self.row - 2, self.column):
             possible_moves.append((self.row - 2, self.column))
         
-        return possible_moves
+        legal_moves = self.filter_checks_and_pins(possible_moves)
+        return legal_moves
         
 
     def threatened_squares(self):
