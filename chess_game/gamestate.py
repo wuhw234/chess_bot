@@ -15,40 +15,53 @@ class GameState:
         self.turn = "W"
         self.board = Board()
         self.movelog = []
-        self.generate_standard()
 
     def get_turn(self):
         return self.turn
 
+    #TODO
     def make_move(self, piece, start_row, start_column, end_row, end_column):
-        self.movelog.append(f"{piece.get_symbol()}: {start_row}{start_column}-{end_row}{end_column}")
-        self.turn = "W" if self.turn == "B" else "B"
+        successful = self.board.attempt_move(piece, start_row, start_column, end_row, end_column)
+        
+        if successful:
+            start_piece = piece
+            end_square = self.board.get_square(end_row, end_column)
+            if end_square:
+                end_piece = end_square
+            else:
+                end_piece = None
+            self.movelog.append([[start_piece, end_piece], 
+                                [(start_row, start_column), (end_row, end_column)]])
+            self.turn = "W" if self.turn == "B" else "B"
 
-    def generate_standard(self):
-        white_rook_1, white_rook_2 = Rook("W", 0, 0, self.board), Rook("W", 0, 7, self.board)
-        white_knight_1, white_knight_2 = Knight("W", 0, 1, self.board), Knight("W", 0, 6, self.board)
-        white_bishop_1, white_bishop_2 = Bishop("W", 0, 2, self.board), Bishop("W", 0, 5, self.board)
-        white_queen = Queen("W", 0, 4, self.board)
-        white_king = King("W", 0, 3, self.board)
-
-        white_pawns = [WhitePawn("W", 1, i, self.board) for i in range(0, DIMENSION)]
-        white_pieces = [white_rook_1, white_rook_2, white_knight_1, white_knight_2,
-                        white_bishop_1, white_bishop_2, white_queen, white_king]
-        self.board.add_pieces(white_pieces)
-        self.board.add_pieces(white_pawns)
-
-        black_rook_1, black_rook_2 = Rook("B", 7, 0, self.board), Rook("B", 7, 7, self.board)
-        black_knight_1, black_knight_2 = Knight("B", 7, 1, self.board), Knight("B", 7, 6, self.board)
-        black_bishop_1, black_bishop_2 = Bishop("B", 7, 2, self.board), Bishop("B", 7, 5, self.board)
-        black_queen = Queen("B", 7, 4, self.board)
-        black_king = King("B", 7, 3, self.board)
-
-        black_pawns = [BlackPawn("B", 6, i, self.board) for i in range(0, DIMENSION)]
-        black_pieces = [black_rook_1, black_rook_2, black_knight_1, black_knight_2,
-                        black_bishop_1, black_bishop_2, black_queen, black_king]
-        self.board.add_pieces(black_pieces)
-        self.board.add_pieces(black_pawns)
 
     def get_board(self):
         return self.board
+
+    # def is_checked(self, color):
+    #     if color == "W":
+    #         return self.white_king.is_attacked()
+    #     else:
+    #         return self.black_king.is_attacked()
+
+    # def is_checkmated(self, color):
+    #     #criteria for checkmate: no legal moves for king to move, no legal way to take offending piece,
+    #     #no legal way to block
+
+    #     #generate all legal moves, see if anything can take the previous move's square
+
+    #     if color == "W":
+    #         if self.white_king.is_attacked() and not self.white_king.generate_legal_moves():
+    #             return True
+    #         return False
+    #     else:
+    #         if self.black_king.is_attacked() and not self.black_king.generate_legal_moves():
+    #             return True
+    #         return False
+
+    def is_stalemated(self, color):
+        pass
+
+    def __str__(self):
+        pass
 

@@ -39,6 +39,7 @@ def main():
                     player_clicks = []
                 else:
                     selected_square = (row, col)
+                    #only add if the selected square contains a piece that matches current turn
                     if len(player_clicks) == 1 or (board.is_occupied(row, col) and 
                         board.get_piece_color(row, col) == game_state.get_turn()):
                         player_clicks.append(selected_square)
@@ -48,9 +49,10 @@ def main():
                     start_row, start_column = player_clicks[0][0], player_clicks[0][1]
                     end_row, end_column = player_clicks[1][0], player_clicks[1][1]
                     piece = board.get_square(start_row, start_column)
-                    successful = board.move_piece(piece, start_row, start_column, end_row, end_column)
-                    if successful:
-                        game_state.make_move(piece, start_row, start_column, end_row, end_column)
+                    game_state.make_move(piece, start_row, start_column, end_row, end_column)
+                    curr_color = game_state.get_turn()
+                    # if game_state.is_checkmated(curr_color):
+                    #     print("wpgg")
 
                     selected_square = ()
                     player_clicks = []

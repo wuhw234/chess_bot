@@ -24,7 +24,6 @@ class King(Piece):
 
     def threatened_squares(self):
         possible_moves = []
-        opposite_color = "B" if self.color == "W" else "W"
 
         for row_offset, col_offset in self.offsets:
             curr_row, curr_column = self.row + row_offset, self.column + col_offset
@@ -44,6 +43,7 @@ class King(Piece):
         threatened_squares = self.board.get_threatened_squares(opposite_color)
 
         if (self.row, self.column) in threatened_squares:
+            print("check")
             return True
         return False
 
