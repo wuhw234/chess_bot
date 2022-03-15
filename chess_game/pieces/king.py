@@ -6,11 +6,11 @@ class King(Piece):
     Class that represents a king.
     """
 
-    def __init__(self, color, row, column, king, board):
-        Piece.__init__(self, color, row, column, king, board)
+    def __init__(self, color, row, column, board):
+        Piece.__init__(self, color, row, column, board)
         self.offsets = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
 
-    def generate_legal_moves(self, prev_move):
+    def generate_legal_moves(self, king, prev_move):
         possible_moves = self.threatened_squares()
         opposite_color = "B" if self.color == "W" else "W"
         

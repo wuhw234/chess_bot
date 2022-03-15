@@ -6,8 +6,8 @@ class Bishop(Piece):
     Class that represents a bishop.
     """
 
-    def __init__(self, color, row, column, king, board):
-        Piece.__init__(self, color, row, column, king, board)
+    def __init__(self, color, row, column, board):
+        Piece.__init__(self, color, row, column, board)
         self.offsets = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
 
     def __str__(self):

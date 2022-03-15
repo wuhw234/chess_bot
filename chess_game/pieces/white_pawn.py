@@ -6,12 +6,12 @@ class WhitePawn(Piece):
     Class that represents a white Pawn.
     """
 
-    def __init__(self, color, row, column, king, board):
-        Piece.__init__(self, color, row, column, king, board)
+    def __init__(self, color, row, column, board):
+        Piece.__init__(self, color, row, column, board)
         self.capture_offsets = [(1, 1), (1, -1)]
         self.offsets = [(1, 0)]
 
-    def generate_legal_moves(self, prev_move):
+    def generate_legal_moves(self, king, prev_move):
         possible_moves = []
         curr_row, curr_column = self.row, self.column
 
@@ -43,7 +43,7 @@ class WhitePawn(Piece):
                 print("en passant available")
                 possible_moves.append((end_row + 1, end_column))
                 
-        legal_moves = self.filter_checks_and_pins(possible_moves)
+        legal_moves = self.filter_checks_and_pins(king, possible_moves)
         return legal_moves
         
 

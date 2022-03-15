@@ -43,7 +43,8 @@ class Board:
             return False
         
         piece = self.get_square(start_row, start_column)
-        legal_moves = piece.generate_legal_moves(prev_move)
+        king = self.white_king if piece.get_color() == "W" else self.black_king
+        legal_moves = piece.generate_legal_moves(king, prev_move)
 
         if (end_row, end_column) not in legal_moves:
             return False
@@ -83,25 +84,25 @@ class Board:
         return threatened_squares
 
     def generate_standard(self):
-        white_king = King("W", 0, 3, None, self)
-        white_rook_1, white_rook_2 = Rook("W", 0, 0, white_king, self), Rook("W", 0, 7, white_king, self)
-        white_knight_1, white_knight_2 = Knight("W", 0, 1, white_king, self), Knight("W", 0, 6, white_king, self)
-        white_bishop_1, white_bishop_2 = Bishop("W", 0, 2, white_king, self), Bishop("W", 0, 5, white_king, self)
-        white_queen = Queen("W", 0, 4, white_king, self)
+        white_king = King("W", 0, 3, self)
+        white_rook_1, white_rook_2 = Rook("W", 0, 0, self), Rook("W", 0, 7, self)
+        white_knight_1, white_knight_2 = Knight("W", 0, 1, self), Knight("W", 0, 6, self)
+        white_bishop_1, white_bishop_2 = Bishop("W", 0, 2, self), Bishop("W", 0, 5, self)
+        white_queen = Queen("W", 0, 4, self)
 
-        white_pawns = [WhitePawn("W", 1, i, white_king, self) for i in range(0, DIMENSION)]
+        white_pawns = [WhitePawn("W", 1, i, self) for i in range(0, DIMENSION)]
         white_pieces = [white_rook_1, white_rook_2, white_knight_1, white_knight_2,
                         white_bishop_1, white_bishop_2, white_queen, white_king]
         self.add_pieces(white_pieces)
         self.add_pieces(white_pawns)
 
-        black_king = King("B", 7, 3, None, self)
-        black_rook_1, black_rook_2 = Rook("B", 7, 0, black_king, self), Rook("B", 7, 7, black_king, self)
-        black_knight_1, black_knight_2 = Knight("B", 7, 1, black_king, self), Knight("B", 7, 6, black_king, self)
-        black_bishop_1, black_bishop_2 = Bishop("B", 7, 2, black_king, self), Bishop("B", 7, 5, black_king, self)
-        black_queen = Queen("B", 7, 4, black_king, self)
+        black_king = King("B", 7, 3, self)
+        black_rook_1, black_rook_2 = Rook("B", 7, 0, self), Rook("B", 7, 7, self)
+        black_knight_1, black_knight_2 = Knight("B", 7, 1, self), Knight("B", 7, 6, self)
+        black_bishop_1, black_bishop_2 = Bishop("B", 7, 2, self), Bishop("B", 7, 5, self)
+        black_queen = Queen("B", 7, 4, self)
 
-        black_pawns = [BlackPawn("B", 6, i, black_king, self) for i in range(0, DIMENSION)]
+        black_pawns = [BlackPawn("B", 6, i, self) for i in range(0, DIMENSION)]
         black_pieces = [black_rook_1, black_rook_2, black_knight_1, black_knight_2,
                         black_bishop_1, black_bishop_2, black_queen, black_king]
         self.add_pieces(black_pieces)
@@ -112,11 +113,12 @@ class Board:
 
     def get_all_legal_moves(self, prev_move, color):
         legal_moves = []
+        king = self.white_king if color == "W" else self.black_king
         for i in range(0, DIMENSION):
             for j in range(0, DIMENSION):
                 piece = self.get_square(i, j) 
                 if piece and piece.get_color() == color:
-                    legal_moves.extend(piece.generate_legal_moves(prev_move))
+                    legal_moves.extend(piece.generate_legal_moves(king, prev_move))
         print(legal_moves)
         return legal_moves
 

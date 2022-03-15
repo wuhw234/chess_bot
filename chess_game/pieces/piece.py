@@ -5,15 +5,14 @@ class Piece:
     Represents a piece on the chess board.
     """
 
-    def __init__(self, color, row, column, king, board):
+    def __init__(self, color, row, column, board):
         self.color = color
         self.column = column
         self.row = row
         self.board = board
         self.offsets = []
-        self.king = king
 
-    def generate_legal_moves(self, prev_move):
+    def generate_legal_moves(self, king, prev_move):
         possible_moves = []
         curr_row, curr_column = self.row, self.column
 
@@ -30,7 +29,7 @@ class Piece:
 
             curr_row, curr_column = self.row, self.column
         
-        legal_moves = self.filter_checks_and_pins(possible_moves)
+        legal_moves = self.filter_checks_and_pins(king, possible_moves)
         return legal_moves
 
     def threatened_squares(self):
@@ -51,7 +50,7 @@ class Piece:
         
         return possible_moves
 
-    def filter_checks_and_pins(self, moves):
+    def filter_checks_and_pins(self, king, moves):
         start_row, start_column = self.get_row(), self.get_column()
         legal_moves = []
         for end_row, end_column in moves:
@@ -61,7 +60,7 @@ class Piece:
             self.set_row(end_row)
             self.set_column(end_column)
 
-            if not self.king.is_attacked(): #undo the move
+            if not king.is_attacked(): #undo the move
                 legal_moves.append((end_row, end_column))
             self.board.add_piece(self, start_row, start_column)
             self.board.add_piece(end_piece, end_row, end_column)
