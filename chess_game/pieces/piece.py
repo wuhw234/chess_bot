@@ -13,7 +13,7 @@ class Piece:
         self.offsets = []
         self.king = king
 
-    def generate_legal_moves(self):
+    def generate_legal_moves(self, prev_move):
         possible_moves = []
         curr_row, curr_column = self.row, self.column
 

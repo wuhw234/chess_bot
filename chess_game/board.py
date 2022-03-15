@@ -38,15 +38,24 @@ class Board:
     def get_square(self, row, column):
         return self.board[row][column]
 
-    def make_move(self, piece, start_row, start_column, end_row, end_column):
+    def make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
         if not self.is_occupied(start_row, start_column) or not piece:
             return False
         
         piece = self.get_square(start_row, start_column)
-        legal_moves = piece.generate_legal_moves()
+        legal_moves = piece.generate_legal_moves(prev_move)
 
         if (end_row, end_column) not in legal_moves:
             return False
+
+        #account for en passant here: if pawn moved off original column and there's no piece
+        #at destination, then remove pawn above it
+        if not self.is_occupied(end_row, end_column) and piece.get_symbol()[1] == "p" and \
+            start_column != end_column:
+            if piece.get_symbol()[0] == "W":
+                self.add_piece(0, end_row - 1, end_column)
+            else:
+                self.add_piece(0, end_row + 1, end_column)
 
         self.add_piece(0, start_row, start_column)
         self.add_piece(piece, end_row, end_column)
@@ -95,13 +104,13 @@ class Board:
         self.white_king = white_king
         self.black_king = black_king
 
-    def get_all_legal_moves(self, color):
+    def get_all_legal_moves(self, prev_move, color):
         legal_moves = []
         for i in range(0, DIMENSION):
             for j in range(0, DIMENSION):
                 piece = self.get_square(i, j) 
                 if piece and piece.get_color() == color:
-                    legal_moves.extend(piece.generate_legal_moves())
+                    legal_moves.extend(piece.generate_legal_moves(prev_move))
         print(legal_moves)
         return legal_moves
 

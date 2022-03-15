@@ -50,10 +50,12 @@ def main():
                     end_row, end_column = player_clicks[1][0], player_clicks[1][1]
                     piece = board.get_square(start_row, start_column)
                     if game_state.log_move(piece, start_row, start_column, end_row, end_column):
-                        if game_state.is_checked():
-                            print("check asdf")
-                        if game_state.is_checkmated():
+                        if game_state.is_stalemate():
+                            print("stalemate")
+                        if game_state.is_checkmate():
                             print("wpgg")
+                        elif game_state.is_check():
+                            print("check!")
 
                     selected_square = ()
                     player_clicks = []

@@ -11,7 +11,7 @@ class BlackPawn(Piece):
         self.offsets = [(-1, 0)]
         self.capture_offsets = [(-1, 1), (-1, -1)]
 
-    def generate_legal_moves(self):
+    def generate_legal_moves(self, prev_move):
         possible_moves = []
         curr_row, curr_column = self.row, self.column
 
@@ -31,7 +31,16 @@ class BlackPawn(Piece):
         if self.row == 6 and not self.board.is_occupied(self.row - 1, self.column) and \
             not self.board.is_occupied(self.row - 2, self.column):
             possible_moves.append((self.row - 2, self.column))
-        
+
+        if prev_move: #en passant
+                pieces = prev_move[0]
+                start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
+                end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
+                if abs(end_row - start_row) == 2 and pieces[0].get_symbol() == "Wp" and \
+                    end_row == self.row and abs(end_column - self.column) == 1:
+                    print("en passant available")
+                    possible_moves.append((end_row - 1, end_column))
+            
         legal_moves = self.filter_checks_and_pins(possible_moves)
         return legal_moves
         

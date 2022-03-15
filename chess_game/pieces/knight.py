@@ -10,7 +10,7 @@ class Knight(Piece):
         Piece.__init__(self, color, row, column, king, board)
         self.offsets = [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
 
-    def generate_legal_moves(self):
+    def generate_legal_moves(self, prev_move):
         possible_moves = []
 
         for row_offset, col_offset in self.offsets:

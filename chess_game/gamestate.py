@@ -21,7 +21,9 @@ class GameState:
 
     #TODO
     def log_move(self, piece, start_row, start_column, end_row, end_column):
-        successful = self.board.make_move(piece, start_row, start_column, end_row, end_column)
+        prev_move = None if not self.movelog else self.movelog[-1]
+        successful = self.board.make_move(prev_move, piece, start_row, 
+                                          start_column, end_row, end_column)
         if successful:
             start_piece = piece
             end_square = self.board.get_square(end_row, end_column)
@@ -40,24 +42,33 @@ class GameState:
     def get_board(self):
         return self.board
 
-    def is_checked(self):
+    def is_check(self):
         if self.turn == "W":
             return self.board.white_king.is_attacked()
         else:
             return self.board.black_king.is_attacked()
 
-    def is_checkmated(self):
+    def is_checkmate(self):
+        prev_move = None if not self.movelog else self.movelog[-1]
         if self.turn == "W":
-            if self.is_checked() and not self.board.get_all_legal_moves("W"):
+            if self.is_check() and not self.board.get_all_legal_moves(prev_move, "W"):
                 return True
             return False
         else:
-            if self.is_checked() and not self.board.get_all_legal_moves("B"):
+            if self.is_check() and not self.board.get_all_legal_moves(prev_move, "B"):
                 return True
             return False
 
-    def is_stalemated(self, color):
-        pass
+    def is_stalemate(self):
+        prev_move = None if not self.movelog else self.movelog[-1]
+        if self.turn == "W":
+            if not self.is_check() and not self.board.get_all_legal_moves(prev_move, "W"):
+                return True
+            return False
+        else:
+            if not self.is_check() and not self.board.get_all_legal_moves(prev_move, "B"):
+                return True
+            return False
 
     def __str__(self):
         pass

@@ -10,7 +10,7 @@ class King(Piece):
         Piece.__init__(self, color, row, column, king, board)
         self.offsets = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
 
-    def generate_legal_moves(self):
+    def generate_legal_moves(self, prev_move):
         possible_moves = self.threatened_squares()
         opposite_color = "B" if self.color == "W" else "W"
         
@@ -44,7 +44,6 @@ class King(Piece):
         threatened_squares = self.board.get_threatened_squares(opposite_color)
 
         if (self.row, self.column) in threatened_squares:
-            print("check")
             return True
         return False
 
