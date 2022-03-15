@@ -57,8 +57,14 @@ class Board:
             else:
                 self.add_piece(0, end_row + 1, end_column)
 
+        if piece.get_symbol() == "Bp" and end_row == 0:
+            self.add_piece(Queen("B", end_row, end_column, self.black_king, self), end_row, end_column)
+        elif piece.get_symbol() == "Wp" and end_row == 7:
+            self.add_piece(Queen("W", end_row, end_column, self.white_king, self), end_row, end_column)
+        else:
+            self.add_piece(piece, end_row, end_column)
+
         self.add_piece(0, start_row, start_column)
-        self.add_piece(piece, end_row, end_column)
         piece.set_row(end_row)
         piece.set_column(end_column)
 

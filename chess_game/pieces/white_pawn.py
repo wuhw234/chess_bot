@@ -42,13 +42,7 @@ class WhitePawn(Piece):
                 end_row == self.row and abs(end_column - self.column) == 1:
                 print("en passant available")
                 possible_moves.append((end_row + 1, end_column))
-            
-
-        #TODO add en passant, add property just_jumped, maybe add distinction between captures
-        #add pawn promotion
-        #for castling, maybe add "has moved" property, also validate that king and 
-        # adjacent squares aren't being attacked
-        
+                
         legal_moves = self.filter_checks_and_pins(possible_moves)
         return legal_moves
         
