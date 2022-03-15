@@ -25,10 +25,10 @@ class GameState:
         successful = self.board.make_move(prev_move, piece, start_row, 
                                           start_column, end_row, end_column)
         if successful:
-            start_piece = piece
+            start_piece = piece.get_symbol()
             end_square = self.board.get_square(end_row, end_column)
             if end_square:
-                end_piece = end_square
+                end_piece = end_square.get_symbol()
             else:
                 end_piece = None
             self.movelog.append([[start_piece, end_piece], 
