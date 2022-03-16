@@ -6,9 +6,10 @@ class King(Piece):
     Class that represents a king.
     """
 
-    def __init__(self, color, row, column, board):
+    def __init__(self, color, row, column, board, rooks):
         Piece.__init__(self, color, row, column, board)
         self.offsets = [(1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)]
+        self.rooks = rooks
 
     def generate_legal_moves(self, king, prev_move):
         possible_moves = self.threatened_squares()
@@ -19,9 +20,40 @@ class King(Piece):
         for move in possible_moves:
             if move not in enemy_threatened_squares:
                 legal_moves.append(move)
-                
+
+        self.castle(king, legal_moves, enemy_threatened_squares)
 
         return legal_moves
+
+    def castle(self, king, legal_moves, enemy_threatened_squares):
+        if not king.get_has_moved() and (self.row, self.column) not in enemy_threatened_squares:
+            for rook in self.rooks:
+                if rook.get_has_moved() or rook.is_killed():
+                    continue
+                rook_column = rook.get_column()
+                king_column = king.get_column()
+                can_castle = True
+
+                #adapt for chess 960
+                #queenside
+                if king_column < rook_column:
+                    for column in range(king_column + 1, king_column + 3):
+                        if (self.row, column) in enemy_threatened_squares or \
+                            self.board.is_occupied(self.row, column):
+                            can_castle = False
+                            break
+                    if can_castle:
+                        legal_moves.append((self.row, king_column + 2))
+                #kingside
+                else:
+                    for column in range(king_column - 1, king_column - 3, -1):
+                        if (self.row, column) in enemy_threatened_squares or \
+                            self.board.is_occupied(self.row, column):
+                            can_castle = False
+                            break
+                    if can_castle:
+                        print((self.row, king_column - 2) in enemy_threatened_squares)
+                        legal_moves.append((self.row, king_column - 2))
 
     def threatened_squares(self):
         possible_moves = []
@@ -46,6 +78,9 @@ class King(Piece):
         if (self.row, self.column) in threatened_squares:
             return True
         return False
+
+    def get_rooks(self):
+        return self.rooks
 
     def __str__(self):
         return f"""

@@ -11,6 +11,8 @@ class Piece:
         self.row = row
         self.board = board
         self.offsets = []
+        self.has_moved = False
+        self.killed = False
 
     def generate_legal_moves(self, king, prev_move):
         possible_moves = []
@@ -83,6 +85,18 @@ class Piece:
 
     def set_column(self, new_column):
         self.column = new_column
+
+    def set_has_moved(self, has_moved):
+        self.has_moved = has_moved
+
+    def get_has_moved(self):
+        return self.has_moved
+
+    def set_killed(self, killed):
+        self.killed = killed
+
+    def is_killed(self):
+        return self.killed
 
 
 
