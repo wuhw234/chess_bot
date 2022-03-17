@@ -41,9 +41,12 @@ class King(Piece):
             #adapt for chess 960
             #queenside
             if king_column < rook_column:
+                #make sure can't castle into check
                 #check [?][5] and [?][4] for not being occupied - exception of occupied by
                 #   king or correct rook
                 #4 = rook, 5 = king
+                if (self.row, 5) in enemy_threatened_squares:
+                    continue
                 if self.board.is_occupied(self.row, 4) and (self.row, 4) not in exceptions:
                     continue
                 elif self.board.is_occupied(self.row, 5) and (self.row, 5) not in exceptions:
@@ -61,9 +64,12 @@ class King(Piece):
                         legal_moves.append((self.row, column))
             #kingside
             else:
-                #check [?][1] and [?][2] for not being occupied
+                #make sure can't castle into check
+                # check [?][1] and [?][2] for not being occupied
                 #2 = rook, 1 = king
-                if self.board.is_occupied(self.row, 1) and (self.row, 1) not in exceptions:
+                if (self.row, 1) in enemy_threatened_squares:
+                    continue
+                elif self.board.is_occupied(self.row, 1) and (self.row, 1) not in exceptions:
                     continue
                 elif self.board.is_occupied(self.row, 2) and (self.row, 2) not in exceptions:
                     continue
