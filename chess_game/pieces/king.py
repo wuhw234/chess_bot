@@ -21,39 +21,63 @@ class King(Piece):
             if move not in enemy_threatened_squares:
                 legal_moves.append(move)
 
-        self.castle(king, legal_moves, enemy_threatened_squares)
+        if not (self.row, self.column) in enemy_threatened_squares and not king.get_has_moved():
+            self.castle(king, legal_moves, enemy_threatened_squares)
 
         return legal_moves
 
     def castle(self, king, legal_moves, enemy_threatened_squares):
-        if not king.get_has_moved() and (self.row, self.column) not in enemy_threatened_squares:
-            for rook in self.rooks:
-                if rook.get_has_moved() or rook.is_killed():
-                    continue
-                rook_column = rook.get_column()
-                king_column = king.get_column()
-                can_castle = True
+        for rook in self.rooks:
+            if rook.get_has_moved() or rook.is_killed():
+                continue
 
-                #adapt for chess 960
-                #queenside
-                if king_column < rook_column:
-                    for column in range(king_column + 1, king_column + 3):
-                        if (self.row, column) in enemy_threatened_squares or \
-                            self.board.is_occupied(self.row, column):
-                            can_castle = False
-                            break
-                    if can_castle:
-                        legal_moves.append((self.row, king_column + 2))
-                #kingside
-                else:
-                    for column in range(king_column - 1, king_column - 3, -1):
-                        if (self.row, column) in enemy_threatened_squares or \
-                            self.board.is_occupied(self.row, column):
-                            can_castle = False
-                            break
-                    if can_castle:
-                        print((self.row, king_column - 2) in enemy_threatened_squares)
-                        legal_moves.append((self.row, king_column - 2))
+            rook_row = rook.get_row()
+            rook_column = rook.get_column()
+            king_column = king.get_column()
+            king_row = king.get_row()
+            exceptions = [(rook_row, rook_column), (king_row, king_column)]
+            can_castle = True
+
+            #adapt for chess 960
+            #queenside
+            if king_column < rook_column:
+                #check [?][5] and [?][4] for not being occupied - exception of occupied by
+                #   king or correct rook
+                #4 = rook, 5 = king
+                if self.board.is_occupied(self.row, 4) and (self.row, 4) not in exceptions:
+                    continue
+                elif self.board.is_occupied(self.row, 5) and (self.row, 5) not in exceptions:
+                    continue
+                for column in range(king_column + 1, rook_column):
+                    if self.board.is_occupied(self.row, column):
+                        can_castle = False
+                        break
+                    elif column <= 5 and (king_row, column) in enemy_threatened_squares:
+                        can_castle = False
+                        break
+                if can_castle:
+                    legal_moves.append((self.row, rook_column))
+                    for column in range(king_column + 2, rook_column):
+                        legal_moves.append((self.row, column))
+            #kingside
+            else:
+                #check [?][1] and [?][2] for not being occupied
+                #2 = rook, 1 = king
+                if self.board.is_occupied(self.row, 1) and (self.row, 1) not in exceptions:
+                    continue
+                elif self.board.is_occupied(self.row, 2) and (self.row, 2) not in exceptions:
+                    continue
+                for column in range(king_column - 1, rook_column, -1):
+                    if self.board.is_occupied(self.row, column):
+                        can_castle = False
+                        break
+                    elif column >= 1 and (king_row, column) in enemy_threatened_squares:
+                        can_castle = False
+                        break
+                if can_castle:
+                    legal_moves.append((self.row, rook_column))
+                    for column in range(king_column - 2, rook_column, -1):
+                        legal_moves.append((self.row, column))
 
     def threatened_squares(self):
         possible_moves = []

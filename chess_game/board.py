@@ -60,23 +60,35 @@ class Board:
                 self.add_piece(0, end_row + 1, end_column)
 
         #acount for castling (adapt for 960)
-        if piece.get_symbol()[1] == "k" and abs(end_column - start_column) == 2:
+        if piece.get_symbol()[1] == "k" and (abs(end_column - start_column) > 1 or 
+            self.is_occupied(end_row, end_column)):
             king_rook, queen_rook = piece.get_rooks()[0], piece.get_rooks()[1]
 
             #kingside
             if end_column < start_column:
                 self.add_piece(0, king_rook.get_row(), king_rook.get_column())
-                self.add_piece(king_rook, end_row, end_column + 1)
+                self.add_piece(0, piece.get_row(), piece.get_column())
+                self.add_piece(king_rook, end_row, 2)
+                self.add_piece(piece, end_row, 1)
+                piece.set_has_moved(True)
+                piece.set_row(end_row)
+                piece.set_column(1)
                 king_rook.set_has_moved(True)
                 king_rook.set_row(end_row)
-                king_rook.set_column(end_column + 1)
+                king_rook.set_column(2)
             #queenside
             else:
                 self.add_piece(0, queen_rook.get_row(), queen_rook.get_column())
-                self.add_piece(queen_rook, end_row, end_column - 1)
+                self.add_piece(0, piece.get_row(), piece.get_column())
+                self.add_piece(queen_rook, end_row, 4)
+                self.add_piece(piece, end_row, 5)
+                piece.set_has_moved(True)
+                piece.set_row(end_row)
+                piece.set_column(5)
                 queen_rook.set_has_moved(True)
                 queen_rook.set_row(end_row)
-                queen_rook.set_column(end_column - 1)
+                queen_rook.set_column(4)
+            return True
 
 
         #account for pawn promotion here
