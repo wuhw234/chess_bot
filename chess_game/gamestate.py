@@ -38,6 +38,10 @@ class GameState:
             return True
         return False
 
+    def get_prev_move(self):
+        if not self.movelog:
+            return None
+        return self.movelog[-1]
 
     def get_board(self):
         return self.board

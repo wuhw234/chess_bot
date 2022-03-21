@@ -33,6 +33,7 @@ class WhitePawn(Piece):
             possible_moves.append((self.row + 2, self.column))
 
         if prev_move: #en passant
+            print(prev_move)
             pieces = prev_move[0]
             start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
             end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]

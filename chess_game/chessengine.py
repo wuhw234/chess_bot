@@ -60,12 +60,37 @@ def main():
                     selected_square = ()
                     player_clicks = []
 
-        draw_game_state(screen, game_state)
+        draw_game_state(screen, game_state, selected_square)
         clock.tick(MAX_FPS)
         p.display.flip()
 
-def draw_game_state(screen, game_state):
+def highlight_squares(screen, game_state, selected_square):
+    #problem: this is being called MAX_FPS times a second, generating legal moves is expensive
+    #solution: maybe 
+    if selected_square:
+        row, column = selected_square
+        board = game_state.get_board()
+        piece = board.get_square(row, column)
+        color = game_state.get_turn()
+        if not piece or piece.get_color() != color:
+            return
+        prev_move = game_state.get_prev_move()
+        color = game_state.get_turn()
+        king = board.get_king(color)
+
+        legal_moves = piece.generate_legal_moves(king, prev_move)
+        s = p.Surface((SQUARE_SIZE,SQUARE_SIZE))
+        s.set_alpha(100)
+        s.fill(p.Color('blue'))
+        screen.blit(s, (column * SQUARE_SIZE, row * SQUARE_SIZE))
+
+        s.fill(p.Color('yellow'))
+        for end_row, end_column in legal_moves:
+            screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
+
+def draw_game_state(screen, game_state, selected_square):
     draw_board(screen)
+    highlight_squares(screen, game_state, selected_square)
     draw_pieces(screen, game_state.get_board())
 
 def draw_board(screen):

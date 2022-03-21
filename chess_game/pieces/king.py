@@ -38,23 +38,24 @@ class King(Piece):
             exceptions = [(rook_row, rook_column), (king_row, king_column)]
             can_castle = True
 
-            #adapt for chess 960
+            #adapted for chess 960
             #queenside
             if king_column < rook_column:
                 #make sure can't castle into check
                 #check [?][5] and [?][4] for not being occupied - exception of occupied by
                 #   king or correct rook
                 #4 = rook, 5 = king
-                if (self.row, 5) in enemy_threatened_squares:
+                if (self.row, 5) in enemy_threatened_squares: #make sure can't castle into check
                     continue
                 if self.board.is_occupied(self.row, 4) and (self.row, 4) not in exceptions:
                     continue
                 elif self.board.is_occupied(self.row, 5) and (self.row, 5) not in exceptions:
                     continue
-                for column in range(king_column + 1, rook_column):
+                for column in range(king_column + 1, rook_column): #search squares inbetween k and r
                     if self.board.is_occupied(self.row, column):
                         can_castle = False
                         break
+                    #make sure all squares king has to jump over aren't attacked
                     elif column <= 5 and (king_row, column) in enemy_threatened_squares:
                         can_castle = False
                         break

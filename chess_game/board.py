@@ -109,6 +109,12 @@ class Board:
 
         return True
 
+    def get_king(self, color):
+        if color == "W":
+            return self.white_king
+        else:
+            return self.black_king
+
     def get_threatened_squares(self, color):
         threatened_squares = set()
         for row in range(0, DIMENSION):
@@ -120,6 +126,15 @@ class Board:
                         threatened_squares.add(square)
         
         return threatened_squares
+
+    # def get_piece_moves(self, row, column, prev_move, color):
+    #     if not self.board[row][column]:
+    #         return []
+        
+    #     king = self.white_king if color == "W" else self.black_king
+    #     piece = self.board[row][column]
+    #     return piece.generate_legal_moves(king, prev_move)
+
 
     def get_all_legal_moves(self, prev_move, color):
         legal_moves = []
