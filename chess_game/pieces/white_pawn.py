@@ -33,14 +33,12 @@ class WhitePawn(Piece):
             possible_moves.append((self.row + 2, self.column))
 
         if prev_move: #en passant
-            print(prev_move)
             pieces = prev_move[0]
             start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
             end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
 
             if abs(end_row - start_row) == 2 and pieces[0] == "Bp" and \
                 end_row == self.row and abs(end_column - self.column) == 1:
-                print("en passant available")
                 possible_moves.append((end_row + 1, end_column))
                 
         legal_moves = self.filter_checks_and_pins(king, possible_moves)

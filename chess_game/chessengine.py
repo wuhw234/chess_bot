@@ -39,9 +39,21 @@ def main():
                     player_clicks = []
                 else:
                     selected_square = (row, col)
-                    #only add if the selected square contains a piece that matches current turn
-                    if len(player_clicks) == 1 or (board.is_occupied(row, col) and 
+                    #QOL piece selection: nested if statements to allow for castling
+                    if (board.is_occupied(row, col) and 
                         board.get_piece_color(row, col) == game_state.get_turn()):
+                        if len(player_clicks) == 1:
+                            start_row, start_column = player_clicks[0]
+                            king_symbol = game_state.get_turn() + "k"
+                            if board.get_square(start_row, start_column).get_symbol() == king_symbol:
+                                player_clicks.append(selected_square)
+                            else:
+                                player_clicks = [selected_square]
+                                print(player_clicks) 
+                        else:
+                            player_clicks = [selected_square]
+                            print(player_clicks)
+                    elif len(player_clicks) == 1:
                         player_clicks.append(selected_square)
                         print(player_clicks)
                     
@@ -53,7 +65,10 @@ def main():
                         if game_state.is_stalemate():
                             print("stalemate")
                         if game_state.is_checkmate():
-                            print("wpgg")
+                            if game_state.get_turn() == "W":
+                                print("Black wins by checkmate")
+                            else:
+                                print("White wins by checkmate")
                         elif game_state.is_check():
                             print("check!")
 
@@ -65,8 +80,8 @@ def main():
         p.display.flip()
 
 def highlight_squares(screen, game_state, selected_square):
-    #problem: this is being called MAX_FPS times a second, generating legal moves is expensive
-    #solution: maybe 
+    #problem: this is being called MAX_FPS times a second, which generates legal moves every time
+    #idk if this will be a problem for AI, maybe adjust in future
     if selected_square:
         row, column = selected_square
         board = game_state.get_board()
