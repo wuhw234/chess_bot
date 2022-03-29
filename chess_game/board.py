@@ -18,7 +18,7 @@ class Board:
 
     def __init__(self):
         self.board = [[0] * DIMENSION for i in range(0, DIMENSION)]
-        self.generate_960()
+        self.generate_standard()
 
     def add_piece(self, piece, row, column):
         self.board[row][column] = piece
@@ -147,6 +147,7 @@ class Board:
         return legal_moves
 
     def generate_standard(self):
+        self.board = [[0] * DIMENSION for i in range(0, DIMENSION)]
         white_rook_1, white_rook_2 = Rook("W", 0, 0, self), Rook("W", 0, 7, self)
         white_king = King("W", 0, 3, self, [white_rook_1, white_rook_2])
         white_knight_1, white_knight_2 = Knight("W", 0, 1, self), Knight("W", 0, 6, self)
@@ -175,6 +176,7 @@ class Board:
         self.black_king = black_king
 
     def generate_960(self):
+        self.board = [[0] * DIMENSION for i in range(0, DIMENSION)]
         #generate coordinates
         king_column = random.randint(1, 6)
         rook_1_column = random.randint(0, king_column - 1)

@@ -19,7 +19,14 @@ class GameState:
     def get_turn(self):
         return self.turn
 
-    #TODO
+    def reset(self, color, type):
+        if type:
+            self.board.generate_standard()
+        else:
+            self.board.generate_960()
+        self.movelog = []
+        self.turn = "W"
+        
     def log_move(self, piece, start_row, start_column, end_row, end_column):
         prev_move = None if not self.movelog else self.movelog[-1]
         successful = self.board.make_move(prev_move, piece, start_row, 
