@@ -38,6 +38,7 @@ def main():
     board = game_state.get_board()
     selected_square = ()
     player_clicks = []
+    last_move = ()
     running = True
     game_active = False
     menu_screen = True
@@ -94,11 +95,13 @@ def main():
                         elif len(player_clicks) == 1:
                             player_clicks.append(selected_square)
                             print(player_clicks)
+                            
                         
                     if len(player_clicks) == 2:
                         start_row, start_column = player_clicks[0][0], player_clicks[0][1]
                         end_row, end_column = player_clicks[1][0], player_clicks[1][1]
                         piece = board.get_square(start_row, start_column)
+
                         if game_state.log_move(piece, start_row, start_column, end_row, end_column):
                             if game_state.is_stalemate():
                                 print("stalemate")
@@ -136,9 +139,27 @@ def main():
             clock.tick(MAX_FPS)
             p.display.flip()
 
+def draw_game_state(screen, game_state, selected_square):
+    draw_board(screen)
+    highlight_squares(screen, game_state, selected_square)
+    draw_pieces(screen, game_state.get_board())
+
 def highlight_squares(screen, game_state, selected_square):
     #problem: this is being called MAX_FPS times a second, which generates legal moves every time
     #idk if this will be a problem for AI, maybe adjust in future
+    
+    s = p.Surface((SQUARE_SIZE,SQUARE_SIZE))
+    s.set_alpha(100)
+
+    #highlight last move
+    prev_move = game_state.get_prev_move()
+    if prev_move:
+        s.fill(p.Color('yellow'))
+        start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
+        end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
+        screen.blit(s, (start_column * SQUARE_SIZE, start_row * SQUARE_SIZE))
+        screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
+
     if selected_square:
         row, column = selected_square
         board = game_state.get_board()
@@ -160,11 +181,7 @@ def highlight_squares(screen, game_state, selected_square):
         for end_row, end_column in legal_moves:
             screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
 
-def draw_game_state(screen, game_state, selected_square):
-    draw_board(screen)
-    highlight_squares(screen, game_state, selected_square)
-    draw_pieces(screen, game_state.get_board())
-
+        
 def draw_board(screen):
     #draws board based on screen coordinates
     colors = [p.Color("white"), p.Color("gray")]
