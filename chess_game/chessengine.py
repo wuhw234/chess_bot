@@ -9,6 +9,8 @@ IMAGES = {}
 BUTTONS = []
 FONT_SIZE = 30
 
+#TODO: convert all pixels using function
+
 def load_images(font, screen):
     #load in pieces
     pieces = ["Bb", "Bk", "Bn", "Bp", "Bq", "Br",
@@ -55,6 +57,7 @@ def main():
                         result = button.check_input(x, y)
                         if result:
                             print(result)
+                            player_color = result
                             game_state.reset(result, 1)
                             menu_screen = False
                             game_active = True
@@ -71,8 +74,10 @@ def main():
                     running = False
                 elif e.type == p.MOUSEBUTTONDOWN:
                     location = p.mouse.get_pos()
-                    col = location[0] // SQUARE_SIZE
-                    row = location[1] // SQUARE_SIZE
+                    #convert clicked location into coordinates
+                    row, col = convert_pixels_to_coords(player_color, location[1]//SQUARE_SIZE, location[0]//SQUARE_SIZE)
+                    # col = location[0] // SQUARE_SIZE
+                    # row = location[1] // SQUARE_SIZE
                     if selected_square == (row, col):
                         selected_square = ()
                         player_clicks = []
@@ -118,7 +123,7 @@ def main():
                         selected_square = ()
                         player_clicks = []
 
-            draw_game_state(screen, game_state, selected_square)
+            draw_game_state(player_color, screen, game_state, selected_square)
             clock.tick(MAX_FPS)
             p.display.flip()
         else: #game has ended
@@ -129,6 +134,7 @@ def main():
                         result = button.check_input(x, y)
                         if result:
                             print(result)
+                            player_color = result
                             game_state.reset(result, 1)
                             menu_screen = False
                             game_active = True
@@ -139,12 +145,24 @@ def main():
             clock.tick(MAX_FPS)
             p.display.flip()
 
-def draw_game_state(screen, game_state, selected_square):
-    draw_board(screen)
-    highlight_squares(screen, game_state, selected_square)
-    draw_pieces(screen, game_state.get_board())
+def convert_pixels_to_coords(player_color, x, y):
+    if player_color == "B":
+        return (x, y)
+    else:
+        return (7-x, 7-y)
 
-def highlight_squares(screen, game_state, selected_square):
+def convert_coords_to_pixels(player_color, row, column):
+    if player_color == "B":
+        return (row * SQUARE_SIZE, column * SQUARE_SIZE)
+    else:
+        return ((7-row) * SQUARE_SIZE, (7-column) * SQUARE_SIZE)
+
+def draw_game_state(player_color, screen, game_state, selected_square):
+    draw_board(screen)
+    highlight_squares(player_color, screen, game_state, selected_square)
+    draw_pieces(screen, player_color, game_state.get_board())
+
+def highlight_squares(player_color, screen, game_state, selected_square):
     #problem: this is being called MAX_FPS times a second, which generates legal moves every time
     #idk if this will be a problem for AI, maybe adjust in future
     
@@ -155,13 +173,13 @@ def highlight_squares(screen, game_state, selected_square):
     prev_move = game_state.get_prev_move()
     if prev_move:
         s.fill(p.Color('yellow'))
-        start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
-        end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
-        screen.blit(s, (start_column * SQUARE_SIZE, start_row * SQUARE_SIZE))
-        screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
+        start_row, start_column = convert_coords_to_pixels(player_color, prev_move[1][0][0], prev_move[1][0][1])
+        end_row, end_column = convert_coords_to_pixels(player_color, prev_move[1][1][0], prev_move[1][1][1])
+        screen.blit(s, (start_column, start_row))
+        screen.blit(s, (end_column, end_row))
 
     if selected_square:
-        row, column = selected_square
+        row, column = selected_square[0], selected_square[1]
         board = game_state.get_board()
         piece = board.get_square(row, column)
         color = game_state.get_turn()
@@ -175,11 +193,13 @@ def highlight_squares(screen, game_state, selected_square):
         s = p.Surface((SQUARE_SIZE,SQUARE_SIZE))
         s.set_alpha(100)
         s.fill(p.Color('blue'))
-        screen.blit(s, (column * SQUARE_SIZE, row * SQUARE_SIZE))
+        row_pixel, column_pixel = convert_coords_to_pixels(player_color, row, column)
+        screen.blit(s, (column_pixel, row_pixel))
 
         s.fill(p.Color('yellow'))
         for end_row, end_column in legal_moves:
-            screen.blit(s, (end_column * SQUARE_SIZE, end_row * SQUARE_SIZE))
+            end_row, end_column = convert_coords_to_pixels(player_color, end_row, end_column)
+            screen.blit(s, (end_column, end_row))
 
         
 def draw_board(screen):
@@ -191,14 +211,15 @@ def draw_board(screen):
             p.draw.rect(screen, color, p.Rect(column * SQUARE_SIZE, row * SQUARE_SIZE,
                                               SQUARE_SIZE, SQUARE_SIZE))
 
-def draw_pieces(screen, board):
+def draw_pieces(screen, player_color, board):
     #draws pieces based on coordinates of screen
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             if board.is_occupied(row, column):
+                row_coord, column_coord = convert_coords_to_pixels(player_color, row, column)
                 piece = board.get_square(row, column)
                 symbol = piece.get_symbol()
-                screen.blit(IMAGES[symbol], p.Rect(column * SQUARE_SIZE, row * SQUARE_SIZE,
+                screen.blit(IMAGES[symbol], p.Rect(column_coord, row_coord,
                                                    SQUARE_SIZE, SQUARE_SIZE))
 
 class Button():
