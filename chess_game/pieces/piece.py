@@ -23,10 +23,10 @@ class Piece:
             while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
                 if self.board.is_occupied(curr_row, curr_column):
                     if self.board.get_piece_color(curr_row, curr_column) != self.color:
-                        possible_moves.append((curr_row, curr_column))
+                        possible_moves.append((self.row, self.column, curr_row, curr_column))
                     break
                 else:
-                    possible_moves.append((curr_row, curr_column))      
+                    possible_moves.append((self.row, self.column, curr_row, curr_column))      
                     curr_row, curr_column = curr_row + y_offset, curr_column + x_offset
 
             curr_row, curr_column = self.row, self.column
@@ -55,7 +55,7 @@ class Piece:
     def filter_checks_and_pins(self, king, moves):
         start_row, start_column = self.get_row(), self.get_column()
         legal_moves = []
-        for end_row, end_column in moves:
+        for start_r, start_c, end_row, end_column in moves:
             end_piece = self.board.get_square(end_row, end_column)
             self.board.add_piece(0, start_row, start_column)
             self.board.add_piece(self, end_row, end_column)
@@ -63,7 +63,7 @@ class Piece:
             self.set_column(end_column)
 
             if not king.is_attacked(): #undo the move
-                legal_moves.append((end_row, end_column))
+                legal_moves.append((start_row, start_column, end_row, end_column))
             self.board.add_piece(self, start_row, start_column)
             self.board.add_piece(end_piece, end_row, end_column)
             self.set_row(start_row)

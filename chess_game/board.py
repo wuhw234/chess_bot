@@ -47,7 +47,9 @@ class Board:
         king = self.white_king if piece.get_color() == "W" else self.black_king
         legal_moves = piece.generate_legal_moves(king, prev_move)
 
-        if (end_row, end_column) not in legal_moves:
+        if (start_row, start_column, end_row, end_column) not in legal_moves:
+            print("failed")
+            print(legal_moves)
             return False
 
         #account for en passant here: if pawn moved off original column and there's no piece

@@ -20,17 +20,17 @@ class BlackPawn(Piece):
             if curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
                 if self.board.is_occupied(curr_row, curr_column) and \
                     self.board.get_piece_color(curr_row, curr_column) == "W":
-                    possible_moves.append((curr_row, curr_column))
+                    possible_moves.append((self.row, self.column, curr_row, curr_column))
 
         for row_offset, column_offset in self.offsets:
             curr_row, curr_column = self.row + row_offset, self.column + column_offset
             if curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
                 if not self.board.is_occupied(curr_row, curr_column):
-                    possible_moves.append((curr_row, curr_column))
+                    possible_moves.append((self.row, self.column, curr_row, curr_column))
         
         if self.row == 6 and not self.board.is_occupied(self.row - 1, self.column) and \
             not self.board.is_occupied(self.row - 2, self.column):
-            possible_moves.append((self.row - 2, self.column))
+            possible_moves.append((self.row, self.column, self.row - 2, self.column))
 
         if prev_move: #en passant
                 pieces = prev_move[0]
@@ -38,7 +38,7 @@ class BlackPawn(Piece):
                 end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
                 if abs(end_row - start_row) == 2 and pieces[0] == "Wp" and \
                     end_row == self.row and abs(end_column - self.column) == 1:
-                    possible_moves.append((end_row - 1, end_column))
+                    possible_moves.append((self.row, self.column, end_row - 1, end_column))
             
         legal_moves = self.filter_checks_and_pins(king, possible_moves)
         return legal_moves

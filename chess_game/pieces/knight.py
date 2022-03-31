@@ -20,9 +20,9 @@ class Knight(Piece):
                 continue
             elif self.board.is_occupied(curr_row, curr_column):
                 if self.board.get_piece_color(curr_row, curr_column) != self.color:
-                    possible_moves.append((curr_row, curr_column))
+                    possible_moves.append((self.row, self.column, curr_row, curr_column))
             else:
-                possible_moves.append((curr_row, curr_column))
+                possible_moves.append((self.row, self.column, curr_row, curr_column))
         
         legal_moves = self.filter_checks_and_pins(king, possible_moves)
         return legal_moves
