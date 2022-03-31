@@ -1,5 +1,6 @@
 import pygame as p
 from gamestate import GameState
+from ai import get_random_move
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -7,6 +8,7 @@ SQUARE_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
 BUTTONS = []
+VARIANTS = []
 FONT_SIZE = 30
 
 #TODO: convert all pixels using function
@@ -19,12 +21,18 @@ def load_images(font, screen):
         IMAGES[piece] = p.transform.scale(p.image.load("chess_game/images/" + piece + ".png"),
                                          (SQUARE_SIZE, SQUARE_SIZE))
 
-    #load in menu buttons
+    #load in white/black buttons
     button_surface = p.transform.scale(p.image.load("chess_game/images/green_button.png"), (200, 100))
     white = Button("W", font, screen, button_surface, 100, 250, "Play as White")
     black = Button("B", font, screen, button_surface, 415, 250, "Play as Black")
     BUTTONS.append(white)
     BUTTONS.append(black)
+
+    #load in variant buttons
+    chess_960 = Button("W", font, screen, button_surface, 100, 250, "Chess960", 2)
+    chess_standard = Button("B", font, screen, button_surface, 415, 250, "Standard", 1)
+    VARIANTS.append(chess_960)
+    VARIANTS.append(chess_standard)
     
 
 def main():
@@ -40,25 +48,47 @@ def main():
     board = game_state.get_board()
     selected_square = ()
     player_clicks = []
-    last_move = ()
     running = True
     game_active = False
-    menu_screen = True
+    menu_screen = False
+    variant_screen = True
 
     while running:
-        #create three game states: menu screen, game over, and in game
-        if menu_screen:
+        if variant_screen:
             draw_board(screen)
             #same code as handling buttons, make into function
             for e in p.event.get():
-                if e.type == p.MOUSEBUTTONDOWN:
+                if e.type == p.QUIT:
+                    running = False
+                elif e.type == p.MOUSEBUTTONDOWN:
+                    x, y = p.mouse.get_pos()
+                    for button in VARIANTS:
+                        result = button.check_variant(x, y)
+                        if result:
+                            variant = result
+                            #change 0 into a variable
+                            menu_screen = True
+                            variant_screen = False
+                            break
+
+            for button in VARIANTS:
+                button.update()
+            clock.tick(MAX_FPS)
+            p.display.flip()
+        elif menu_screen:
+            draw_board(screen)
+            #same code as handling buttons, make into function
+            for e in p.event.get():
+                if e.type == p.QUIT:
+                    running = False
+                elif e.type == p.MOUSEBUTTONDOWN:
                     x, y = p.mouse.get_pos()
                     for button in BUTTONS:
                         result = button.check_input(x, y)
                         if result:
-                            print(result)
                             player_color = result
-                            game_state.reset(result, 1)
+                            #change 0 into a variable
+                            game_state.reset(result, variant)
                             menu_screen = False
                             game_active = True
                             break
@@ -68,16 +98,17 @@ def main():
             clock.tick(MAX_FPS)
             p.display.flip()
 
-        if game_active:
+        elif game_active:
+            curr_turn = game_state.get_turn()
             for e in p.event.get():
                 if e.type == p.QUIT:
                     running = False
-                elif e.type == p.MOUSEBUTTONDOWN:
+                elif e.type == p.MOUSEBUTTONDOWN and player_color == curr_turn:
+                    #allows for AI to move
                     location = p.mouse.get_pos()
                     #convert clicked location into coordinates
                     row, col = convert_pixels_to_coords(player_color, location[1]//SQUARE_SIZE, location[0]//SQUARE_SIZE)
-                    # col = location[0] // SQUARE_SIZE
-                    # row = location[1] // SQUARE_SIZE
+
                     if selected_square == (row, col):
                         selected_square = ()
                         player_clicks = []
@@ -122,20 +153,42 @@ def main():
 
                         selected_square = ()
                         player_clicks = []
+            if player_color != curr_turn:
+                #have AI make a move
+                prev_move = game_state.get_prev_move()
+                legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
+                move = get_random_move(legal_moves)
+                print(move)
+            #need to refactor get legal moves to include start location
+            # if game_state.log_move(piece, start_row, start_column, end_row, end_column):
+            #     if game_state.is_stalemate():
+            #         print("stalemate")
+            #         game_active = False
+            #     if game_state.is_checkmate():
+            #         if game_state.get_turn() == "W":
+            #             print("Black wins by checkmate")
+            #         else:
+            #             print("White wins by checkmate")
+            #         game_active = False
+            #     elif game_state.is_check():
+            #         print("check!")
+
 
             draw_game_state(player_color, screen, game_state, selected_square)
             clock.tick(MAX_FPS)
             p.display.flip()
         else: #game has ended
             for e in p.event.get():
-                if e.type == p.MOUSEBUTTONDOWN:
+                if e.type == p.QUIT:
+                    running = False
+                elif e.type == p.MOUSEBUTTONDOWN:
                     x, y = p.mouse.get_pos()
                     for button in BUTTONS:
                         result = button.check_input(x, y)
                         if result:
-                            print(result)
                             player_color = result
-                            game_state.reset(result, 1)
+                            #change 0 into a variable
+                            game_state.reset(result, variant)
                             menu_screen = False
                             game_active = True
                             break
@@ -172,7 +225,8 @@ def highlight_squares(player_color, screen, game_state, selected_square):
     #highlight last move
     prev_move = game_state.get_prev_move()
     if prev_move:
-        s.fill(p.Color('yellow'))
+        orange = (255, 196, 0)
+        s.fill(p.Color(orange))
         start_row, start_column = convert_coords_to_pixels(player_color, prev_move[1][0][0], prev_move[1][0][1])
         end_row, end_column = convert_coords_to_pixels(player_color, prev_move[1][1][0], prev_move[1][1][1])
         screen.blit(s, (start_column, start_row))
@@ -223,7 +277,9 @@ def draw_pieces(screen, player_color, board):
                                                    SQUARE_SIZE, SQUARE_SIZE))
 
 class Button():
-    def __init__(self, color, font, screen, image, x, y, text_input):
+
+    def __init__(self, color, font, screen, image, x, y, text_input, variant = 1):
+        self.variant = variant
         self.color = color
         self.screen = screen
         self.image = image
@@ -241,6 +297,11 @@ class Button():
     def check_input(self, x, y):
         if x in range(self.rect.left, self.rect.right) and y in range(self.rect.top, self.rect.bottom):
             return self.color
+        return None
+
+    def check_variant(self, x, y):
+        if x in range(self.rect.left, self.rect.right) and y in range(self.rect.top, self.rect.bottom):
+            return self.variant
         return None
 if __name__ == "__main__":
     main()
