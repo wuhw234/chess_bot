@@ -157,21 +157,23 @@ def main():
                 #have AI make a move
                 prev_move = game_state.get_prev_move()
                 legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
+                print(legal_moves)
                 move = get_random_move(legal_moves)
-                print(move)
+                start_row, start_column, end_row, end_column = move
+                piece = board.get_square(start_row, start_column)
             #need to refactor get legal moves to include start location
-            # if game_state.log_move(piece, start_row, start_column, end_row, end_column):
-            #     if game_state.is_stalemate():
-            #         print("stalemate")
-            #         game_active = False
-            #     if game_state.is_checkmate():
-            #         if game_state.get_turn() == "W":
-            #             print("Black wins by checkmate")
-            #         else:
-            #             print("White wins by checkmate")
-            #         game_active = False
-            #     elif game_state.is_check():
-            #         print("check!")
+                game_state.log_move(piece, start_row, start_column, end_row, end_column)
+                if game_state.is_stalemate():
+                    print("stalemate")
+                    game_active = False
+                if game_state.is_checkmate():
+                    if game_state.get_turn() == "W":
+                        print("Black wins by checkmate")
+                    else:
+                        print("White wins by checkmate")
+                    game_active = False
+                elif game_state.is_check():
+                    print("check!")
 
 
             draw_game_state(player_color, screen, game_state, selected_square)

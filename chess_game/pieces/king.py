@@ -18,7 +18,8 @@ class King(Piece):
         enemy_threatened_squares = self.board.get_threatened_squares(opposite_color)
         legal_moves = []
         for move in possible_moves:
-            if move not in enemy_threatened_squares:
+            end_row, end_column = move[2], move[3]
+            if (end_row, end_column) not in enemy_threatened_squares:
                 legal_moves.append(move)
 
         if not (self.row, self.column) in enemy_threatened_squares and not king.get_has_moved():

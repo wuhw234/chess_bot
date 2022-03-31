@@ -95,9 +95,9 @@ class Board:
 
         #account for pawn promotion here
         if piece.get_symbol() == "Bp" and end_row == 0:
-            self.add_piece(Queen("B", end_row, end_column, self.black_king, self), end_row, end_column)
+            self.add_piece(Queen("B", end_row, end_column, self), end_row, end_column)
         elif piece.get_symbol() == "Wp" and end_row == 7:
-            self.add_piece(Queen("W", end_row, end_column, self.white_king, self), end_row, end_column)
+            self.add_piece(Queen("W", end_row, end_column, self), end_row, end_column)
         else:
             end_piece = self.get_square(end_row, end_column)
             if end_piece:
