@@ -158,10 +158,10 @@ def main():
                 prev_move = game_state.get_prev_move()
                 legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
                 print(legal_moves)
+                print(game_state.get_prev_move())
                 move = get_random_move(legal_moves)
                 start_row, start_column, end_row, end_column = move
                 piece = board.get_square(start_row, start_column)
-            #need to refactor get legal moves to include start location
                 game_state.log_move(piece, start_row, start_column, end_row, end_column)
                 if game_state.is_stalemate():
                     print("stalemate")
@@ -253,6 +253,7 @@ def highlight_squares(player_color, screen, game_state, selected_square):
         screen.blit(s, (column_pixel, row_pixel))
 
         s.fill(p.Color('yellow'))
+        print(legal_moves)
         for start_r, start_c, end_row, end_column in legal_moves:
             end_row, end_column = convert_coords_to_pixels(player_color, end_row, end_column)
             screen.blit(s, (end_column, end_row))

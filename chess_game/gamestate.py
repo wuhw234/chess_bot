@@ -15,6 +15,7 @@ class GameState:
         self.turn = "W"
         self.board = Board()
         self.movelog = []
+        #if memory becomes a problem, make it so that movelog only contains most recent
 
     def get_turn(self):
         return self.turn
@@ -29,21 +30,37 @@ class GameState:
 
     def log_move(self, piece, start_row, start_column, end_row, end_column):
         prev_move = None if not self.movelog else self.movelog[-1]
-        successful = self.board.make_move(prev_move, piece, start_row, 
+        restore_piece = self.board.make_move(prev_move, piece, start_row, 
                                           start_column, end_row, end_column)
-        if successful:
-            start_piece = piece.get_symbol()
+        if restore_piece:
+            #end row and end column could be different depending on castling
+            if piece.get_symbol()[1] == "k":
+                end_row, end_column = piece.get_location()
+
+            start_piece = piece
             end_square = self.board.get_square(end_row, end_column)
             if end_square:
-                end_piece = end_square.get_symbol()
+                end_piece = end_square
             else:
                 end_piece = None
             self.movelog.append([[start_piece, end_piece], 
-                                [(start_row, start_column), (end_row, end_column)]])
+                                [(start_row, start_column), (end_row, end_column)], 
+                                restore_piece])
             self.turn = "W" if self.turn == "B" else "B"
 
             return True
         return False
+
+    def undo_move():
+        #have to consider that we have to undo whether pieces are moved or killed
+        #have to identify previous move as castling
+        #problem: we have to know whether to revert piece "has moved" to true or false
+        #solution: maybe make a undo move function on piece itself storing its previous locations
+        #castling: get rook, return to previous location, get king, return to previous location
+        #en passant: get captured pawn, return to previous location
+        #promotion: if previous move pawn and queen is returned, put start piece back, remove 1 ahead of it
+        #standard: restore captured piece, restore current piece
+        pass
 
     def get_prev_move(self):
         if not self.movelog:

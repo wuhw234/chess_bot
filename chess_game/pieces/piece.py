@@ -11,7 +11,7 @@ class Piece:
         self.row = row
         self.board = board
         self.offsets = []
-        self.has_moved = False
+        self.prev_squares = []
         self.killed = False
 
     def generate_legal_moves(self, king, prev_move):
@@ -80,17 +80,31 @@ class Piece:
     def get_column(self):
         return self.column
 
+    def get_location(self):
+        return (self.row, self.column)
+
     def set_row(self, new_row):
         self.row = new_row
 
     def set_column(self, new_column):
         self.column = new_column
 
-    def set_has_moved(self, has_moved):
-        self.has_moved = has_moved
+    def set_location(self, new_row, new_column):
+        self.row = new_row
+        self.column = new_column
+
+    def add_prev_location(self, row, column):
+        self.prev_squares.append((row, column))
+
+    def undo_move(self):
+        if not self.prev_squares:
+            return False
+        prev_row, prev_column = self.prev_squares.pop()
+        self.row, self.column = prev_row, prev_column
+        return True
 
     def get_has_moved(self):
-        return self.has_moved
+        return self.prev_squares
 
     def set_killed(self, killed):
         self.killed = killed

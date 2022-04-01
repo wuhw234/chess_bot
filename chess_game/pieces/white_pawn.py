@@ -37,7 +37,7 @@ class WhitePawn(Piece):
             start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
             end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
 
-            if abs(end_row - start_row) == 2 and pieces[0] == "Bp" and \
+            if abs(end_row - start_row) == 2 and pieces[0].get_symbol() == "Bp" and \
                 end_row == self.row and abs(end_column - self.column) == 1:
                 possible_moves.append((self.row, self.column, end_row + 1, end_column))
                 

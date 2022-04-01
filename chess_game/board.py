@@ -22,6 +22,8 @@ class Board:
 
     def add_piece(self, piece, row, column):
         self.board[row][column] = piece
+        if piece:
+            piece.set_location(row, column)
     
     def add_pieces(self, pieces):
         for piece in pieces:
@@ -41,75 +43,93 @@ class Board:
         return self.board[row][column]
 
     def make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
+        #check for invalid moves
         if not self.is_occupied(start_row, start_column) or not piece:
             return False
         
         king = self.white_king if piece.get_color() == "W" else self.black_king
         legal_moves = piece.generate_legal_moves(king, prev_move)
 
+        symbol = piece.get_symbol()
+        end_piece = self.get_square(end_row, end_column)
+
         if (start_row, start_column, end_row, end_column) not in legal_moves:
-            print("failed")
-            print(legal_moves)
             return False
+
+        #valid moves _____________________________________________________________________
 
         #account for en passant here: if pawn moved off original column and there's no piece
         #at destination, then remove pawn above it
-        if not self.is_occupied(end_row, end_column) and piece.get_symbol()[1] == "p" and \
+
+        elif not self.is_occupied(end_row, end_column) and piece.get_symbol()[1] == "p" and \
             start_column != end_column:
+            print("en passant available")
             if piece.get_symbol()[0] == "W":
+                enemy_pawn = self.get_square(end_row - 1, end_column)
                 self.add_piece(0, end_row - 1, end_column)
+
+                self.add_piece(0, start_row, start_column)
+                piece.add_prev_location(piece.get_row(), piece.get_column())
+                self.add_piece(piece, end_row, end_column)
             else:
+                enemy_pawn = self.get_square(end_row + 1, end_column)
                 self.add_piece(0, end_row + 1, end_column)
 
-        #acount for castling (adapt for 960)
-        if piece.get_symbol()[1] == "k" and (abs(end_column - start_column) > 1 or 
-            self.is_occupied(end_row, end_column)):
-            king_rook, queen_rook = piece.get_rooks()[0], piece.get_rooks()[1]
+                self.add_piece(0, start_row, start_column)
+                piece.add_prev_location(piece.get_row(), piece.get_column())
+                self.add_piece(piece, end_row, end_column)
+            return enemy_pawn
 
+        #account for pawn promotion here
+        elif piece.get_symbol() == "Bp" and end_row == 0:
+            self.add_piece(0, start_row, start_column)
+
+            new_queen = Queen("B", end_row, end_column, self)
+            self.add_piece(new_queen, end_row, end_column)
+
+            return new_queen
+        elif piece.get_symbol() == "Wp" and end_row == 7:
+            self.add_piece(0, start_row, start_column)
+
+            new_queen = Queen("W", end_row, end_column, self)
+            self.add_piece(new_queen, end_row, end_column)
+
+            return new_queen
+
+        #acount for castling (adapt for 960)
+        elif symbol[1] == "k" and (abs(end_column - start_column) > 1 or 
+            (end_piece and end_piece.get_symbol()[1] == symbol[1])):
+
+            king_rook, queen_rook = piece.get_rooks()[0], piece.get_rooks()[1]
             #kingside
             if end_column < start_column:
                 self.add_piece(0, king_rook.get_row(), king_rook.get_column())
                 self.add_piece(0, piece.get_row(), piece.get_column())
-                self.add_piece(king_rook, end_row, 2)
+
+                piece.add_prev_location(piece.get_row(), piece.get_column())
                 self.add_piece(piece, end_row, 1)
-                piece.set_has_moved(True)
-                piece.set_row(end_row)
-                piece.set_column(1)
-                king_rook.set_has_moved(True)
-                king_rook.set_row(end_row)
-                king_rook.set_column(2)
+
+                king_rook.add_prev_location(king_rook.get_row(), king_rook.get_column())
+                self.add_piece(king_rook, end_row, 2)
+
+                return king_rook
             #queenside
             else:
                 self.add_piece(0, queen_rook.get_row(), queen_rook.get_column())
                 self.add_piece(0, piece.get_row(), piece.get_column())
-                self.add_piece(queen_rook, end_row, 4)
+
+                piece.add_prev_location(piece.get_row(), piece.get_column())
                 self.add_piece(piece, end_row, 5)
-                piece.set_has_moved(True)
-                piece.set_row(end_row)
-                piece.set_column(5)
-                queen_rook.set_has_moved(True)
-                queen_rook.set_row(end_row)
-                queen_rook.set_column(4)
-            return True
 
+                queen_rook.add_prev_location(queen_rook.get_row(), queen_rook.get_column())
+                self.add_piece(queen_rook, end_row, 4)
 
-        #account for pawn promotion here
-        if piece.get_symbol() == "Bp" and end_row == 0:
-            self.add_piece(Queen("B", end_row, end_column, self), end_row, end_column)
-        elif piece.get_symbol() == "Wp" and end_row == 7:
-            self.add_piece(Queen("W", end_row, end_column, self), end_row, end_column)
+                return queen_rook
         else:
-            end_piece = self.get_square(end_row, end_column)
-            if end_piece:
-                end_piece.set_killed(True)
+            self.add_piece(0, piece.get_row(), piece.get_column())
+            piece.add_prev_location(piece.get_row(), piece.get_column())
             self.add_piece(piece, end_row, end_column)
-
-        self.add_piece(0, start_row, start_column)
-        piece.set_has_moved(True)
-        piece.set_row(end_row)
-        piece.set_column(end_column)
-
-        return True
+            return 1
 
     def get_king(self, color):
         if color == "W":

@@ -33,12 +33,12 @@ class BlackPawn(Piece):
             possible_moves.append((self.row, self.column, self.row - 2, self.column))
 
         if prev_move: #en passant
-                pieces = prev_move[0]
-                start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
-                end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
-                if abs(end_row - start_row) == 2 and pieces[0] == "Wp" and \
-                    end_row == self.row and abs(end_column - self.column) == 1:
-                    possible_moves.append((self.row, self.column, end_row - 1, end_column))
+            pieces = prev_move[0]
+            start_row, start_column = prev_move[1][0][0], prev_move[1][0][1]
+            end_row, end_column = prev_move[1][1][0], prev_move[1][1][1]
+            if abs(end_row - start_row) == 2 and pieces[0].get_symbol() == "Wp" and \
+                end_row == self.row and abs(end_column - self.column) == 1:
+                possible_moves.append((self.row, self.column, end_row - 1, end_column))
             
         legal_moves = self.filter_checks_and_pins(king, possible_moves)
         return legal_moves
