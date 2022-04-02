@@ -44,6 +44,7 @@ class Board:
 
     def make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
         #check for invalid moves
+        
         if not self.is_occupied(start_row, start_column) or not piece:
             return False
         
@@ -52,8 +53,8 @@ class Board:
 
         symbol = piece.get_symbol()
         end_piece = self.get_square(end_row, end_column)
-
         if (start_row, start_column, end_row, end_column) not in legal_moves:
+            print(legal_moves, (start_row, start_column, end_row, end_column))
             return False
 
         #valid moves _____________________________________________________________________
@@ -81,25 +82,29 @@ class Board:
             return enemy_pawn
 
         #account for pawn promotion here
+        #make it so that you move the pawn forward one square and then undo the move
         elif piece.get_symbol() == "Bp" and end_row == 0:
             self.add_piece(0, start_row, start_column)
+            piece.add_prev_location(start_row, start_column)
+            self.add_piece(piece, end_row, end_column)
 
             new_queen = Queen("B", end_row, end_column, self)
             self.add_piece(new_queen, end_row, end_column)
 
-            return new_queen
+            return piece
         elif piece.get_symbol() == "Wp" and end_row == 7:
             self.add_piece(0, start_row, start_column)
+            piece.add_prev_location(start_row, start_column)
+            self.add_piece(piece, end_row, end_column)
 
             new_queen = Queen("W", end_row, end_column, self)
             self.add_piece(new_queen, end_row, end_column)
 
-            return new_queen
+            return piece
 
         #acount for castling (adapt for 960)
         elif symbol[1] == "k" and (abs(end_column - start_column) > 1 or 
-            (end_piece and end_piece.get_symbol()[1] == symbol[1])):
-
+            (end_piece and end_piece.get_symbol()[0] == symbol[0])):
             king_rook, queen_rook = piece.get_rooks()[0], piece.get_rooks()[1]
             #kingside
             if end_column < start_column:
@@ -198,6 +203,7 @@ class Board:
         self.black_king = black_king
 
     def generate_960(self):
+        #TODO: make this more efficient
         self.board = [[0] * DIMENSION for i in range(0, DIMENSION)]
         #generate coordinates
         king_column = random.randint(1, 6)
@@ -253,7 +259,6 @@ class Board:
     #even == 0: don't care even == 1, exclude odd numbers  even == 2 exclude even numbers
     def random_but_exclude(self, low, high, available, even = 0):
         while True:
-            print(available)
             number = random.randint(low, high)
             if ((even == 1 and number % 2 == 0) or (even == 2 and number % 2 != 0) or \
                 (not even)) and number in available:

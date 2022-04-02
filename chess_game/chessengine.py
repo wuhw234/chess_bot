@@ -11,8 +11,6 @@ BUTTONS = []
 VARIANTS = []
 FONT_SIZE = 30
 
-#TODO: convert all pixels using function
-
 def load_images(font, screen):
     #load in pieces
     pieces = ["Bb", "Bk", "Bn", "Bp", "Bq", "Br",
@@ -103,7 +101,11 @@ def main():
             for e in p.event.get():
                 if e.type == p.QUIT:
                     running = False
-                elif e.type == p.MOUSEBUTTONDOWN and player_color == curr_turn:
+                #add undo move here as an event for testing
+                elif e.type == p.KEYDOWN:
+                    if e.key == p.K_z:
+                        game_state.undo_move()
+                elif e.type == p.MOUSEBUTTONDOWN: # and player_color == curr_turn
                     #allows for AI to move
                     location = p.mouse.get_pos()
                     #convert clicked location into coordinates
@@ -120,6 +122,8 @@ def main():
                             if len(player_clicks) == 1:
                                 start_row, start_column = player_clicks[0]
                                 king_symbol = game_state.get_turn() + "k"
+
+                                #TODO: ran into exception here: it was int instead of a piece?
                                 if board.get_square(start_row, start_column).get_symbol() == king_symbol:
                                     player_clicks.append(selected_square)
                                 else:
@@ -153,27 +157,27 @@ def main():
 
                         selected_square = ()
                         player_clicks = []
-            if player_color != curr_turn:
-                #have AI make a move
-                prev_move = game_state.get_prev_move()
-                legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
-                print(legal_moves)
-                print(game_state.get_prev_move())
-                move = get_random_move(legal_moves)
-                start_row, start_column, end_row, end_column = move
-                piece = board.get_square(start_row, start_column)
-                game_state.log_move(piece, start_row, start_column, end_row, end_column)
-                if game_state.is_stalemate():
-                    print("stalemate")
-                    game_active = False
-                if game_state.is_checkmate():
-                    if game_state.get_turn() == "W":
-                        print("Black wins by checkmate")
-                    else:
-                        print("White wins by checkmate")
-                    game_active = False
-                elif game_state.is_check():
-                    print("check!")
+            # if player_color != curr_turn:
+            #     #have AI make a move
+            #     prev_move = game_state.get_prev_move()
+            #     legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
+            #     print(legal_moves)
+            #     print(game_state.get_prev_move())
+            #     move = get_random_move(legal_moves)
+            #     start_row, start_column, end_row, end_column = move
+            #     piece = board.get_square(start_row, start_column)
+            #     game_state.log_move(piece, start_row, start_column, end_row, end_column)
+            #     if game_state.is_stalemate():
+            #         print("stalemate")
+            #         game_active = False
+            #     if game_state.is_checkmate():
+            #         if game_state.get_turn() == "W":
+            #             print("Black wins by checkmate")
+            #         else:
+            #             print("White wins by checkmate")
+            #         game_active = False
+            #     elif game_state.is_check():
+            #         print("check!")
 
 
             draw_game_state(player_color, screen, game_state, selected_square)

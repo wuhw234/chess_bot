@@ -1,3 +1,4 @@
+from tracemalloc import start
 from board import Board
 from pieces.bishop import Bishop
 from pieces.black_pawn import BlackPawn
@@ -30,19 +31,18 @@ class GameState:
 
     def log_move(self, piece, start_row, start_column, end_row, end_column):
         prev_move = None if not self.movelog else self.movelog[-1]
+        start_piece = piece
+        end_square = self.board.get_square(end_row, end_column)
+        if end_square:
+            end_piece = end_square
+        else:
+            end_piece = 0
         restore_piece = self.board.make_move(prev_move, piece, start_row, 
                                           start_column, end_row, end_column)
         if restore_piece:
             #end row and end column could be different depending on castling
             if piece.get_symbol()[1] == "k":
                 end_row, end_column = piece.get_location()
-
-            start_piece = piece
-            end_square = self.board.get_square(end_row, end_column)
-            if end_square:
-                end_piece = end_square
-            else:
-                end_piece = None
             self.movelog.append([[start_piece, end_piece], 
                                 [(start_row, start_column), (end_row, end_column)], 
                                 restore_piece])
@@ -51,16 +51,59 @@ class GameState:
             return True
         return False
 
-    def undo_move():
-        #have to consider that we have to undo whether pieces are moved or killed
-        #have to identify previous move as castling
-        #problem: we have to know whether to revert piece "has moved" to true or false
-        #solution: maybe make a undo move function on piece itself storing its previous locations
+    def undo_move(self):
         #castling: get rook, return to previous location, get king, return to previous location
         #en passant: get captured pawn, return to previous location
         #promotion: if previous move pawn and queen is returned, put start piece back, remove 1 ahead of it
         #standard: restore captured piece, restore current piece
-        pass
+        #make sure to undo move in prev_moves array
+        if not self.movelog:
+            return False
+        prev_move = self.movelog.pop()
+        start_piece, end_piece = prev_move[0]
+        start_row, start_column = prev_move[1][0]
+        end_row, end_column = prev_move[1][1]
+        restore_piece = prev_move[2]
+
+        #standard
+        if restore_piece == 1:
+            pass
+
+        #castling
+        elif restore_piece.get_symbol()[1] == "r":
+            self.board.add_piece(0, end_row, end_column)
+            prev_row, prev_column = restore_piece.get_row(), restore_piece.get_column()
+            self.board.add_piece(0, prev_row, prev_column)
+
+            self.board.add_piece(start_piece, start_row, start_column)
+            rook_row, rook_column = restore_piece.get_prev_location()
+            self.board.add_piece(restore_piece, rook_row, rook_column)
+            start_piece.get_prev_location()
+            
+            self.turn = "W" if self.turn == "B" else "B"
+
+            return True
+
+        #en passant and promotion
+        elif restore_piece.get_symbol()[1] == "p":
+            if end_row == 7 or end_row == 0:
+                pawn_row, pawn_column = restore_piece.get_prev_location()
+                self.board.add_piece(0, end_row, end_column)
+                self.board.add_piece(restore_piece, pawn_row, pawn_column)
+                self.board.add_piece(end_piece, end_row, end_column)
+                self.turn = "W" if self.turn == "B" else "B"
+                return True
+            #en passant
+            else:
+                self.board.add_piece(restore_piece, restore_piece.get_row(), restore_piece.get_column())
+        
+        self.board.add_piece(start_piece, start_row, start_column)
+        self.board.add_piece(end_piece, end_row, end_column)
+        start_piece.get_prev_location()
+
+        self.turn = "W" if self.turn == "B" else "B"
+        return True
+
 
     def get_prev_move(self):
         if not self.movelog:

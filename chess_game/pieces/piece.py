@@ -96,6 +96,11 @@ class Piece:
     def add_prev_location(self, row, column):
         self.prev_squares.append((row, column))
 
+    def get_prev_location(self):
+        if self.prev_squares:
+            return self.prev_squares.pop()
+        return False
+
     def undo_move(self):
         if not self.prev_squares:
             return False
@@ -104,7 +109,7 @@ class Piece:
         return True
 
     def get_has_moved(self):
-        return self.prev_squares
+        return True if self.prev_squares else False
 
     def set_killed(self, killed):
         self.killed = killed
