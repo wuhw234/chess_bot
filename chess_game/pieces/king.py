@@ -16,11 +16,11 @@ class King(Piece):
         opposite_color = "B" if self.color == "W" else "W"
         
         enemy_threatened_squares = self.board.get_threatened_squares(opposite_color)
+        legal_moves = self.filter_checks_and_pins(king, possible_moves)
 
         if not (self.row, self.column) in enemy_threatened_squares and not king.get_has_moved():
-            self.castle(king, possible_moves, enemy_threatened_squares)
+            self.castle(king, legal_moves, enemy_threatened_squares)
             
-        legal_moves = self.filter_checks_and_pins(king, possible_moves)
 
         return legal_moves
 
@@ -45,20 +45,25 @@ class King(Piece):
                 #4 = rook, 5 = king
                 if (self.row, 5) in enemy_threatened_squares: #make sure can't castle into check
                     continue
+                #make sure final squares for rook and king are not occupied by other pieces
                 if self.board.is_occupied(self.row, 4) and (self.row, 4) not in exceptions:
                     continue
                 elif self.board.is_occupied(self.row, 5) and (self.row, 5) not in exceptions:
                     continue
-                for column in range(king_column + 1, rook_column): #search squares inbetween k and r
+                #make sure no pieces are inbetween king and rook
+                for column in range(king_column + 1, rook_column):
                     if self.board.is_occupied(self.row, column):
                         can_castle = False
                         break
-                    #make sure all squares king has to jump over aren't attacked
-                    elif column <= 5 and (king_row, column) in enemy_threatened_squares:
+                #make sure all squares king has to move over aren't attacked
+                for column in range(king_column, 6):
+                    if (king_row, column) in enemy_threatened_squares:
                         can_castle = False
                         break
                 if can_castle:
+                    print("can castle")
                     legal_moves.append((self.row, self.column, self.row, rook_column))
+                    print(legal_moves)
                     for column in range(king_column + 2, rook_column):
                         legal_moves.append((self.row, self.column, self.row, column))
             #kingside
@@ -76,10 +81,12 @@ class King(Piece):
                     if self.board.is_occupied(self.row, column):
                         can_castle = False
                         break
-                    elif column >= 1 and (king_row, column) in enemy_threatened_squares:
+                for column in range(king_column, 0, -1):
+                    if (king_row, column) in enemy_threatened_squares:
                         can_castle = False
                         break
                 if can_castle:
+                    print("can castle")
                     legal_moves.append((self.row, self.column, self.row, rook_column))
                     for column in range(king_column - 2, rook_column, -1):
                         legal_moves.append((self.row, self.column, self.row, column))
