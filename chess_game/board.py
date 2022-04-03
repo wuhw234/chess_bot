@@ -42,6 +42,20 @@ class Board:
     def get_square(self, row, column):
         return self.board[row][column]
 
+    def get_material(self):
+        piece_values = {"k": 0, "q": 9, "r": 5, "b": 3, "n": 3, "p": 1}
+        score = 0
+        for i in range(0, DIMENSION):
+            for j in range(0, DIMENSION):
+                if self.board[i][j]:
+                    symbol = self.board[i][j].get_symbol()
+                    if symbol[0] == "W":
+                        score += piece_values[symbol[1]]
+                    else:
+                        score -= piece_values[symbol[1]]
+
+        return score
+
     def make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
         #check for invalid moves
         
