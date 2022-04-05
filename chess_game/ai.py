@@ -31,7 +31,6 @@ def minimax(moves, game_state, board, turn, depth):
             color = game_state.get_turn()
             legal_moves = board.get_all_legal_moves(prev_move, color)
             score = minimax(legal_moves, game_state, board, color, depth-1)
-            print(score)
 
             if score > max_score:
                 max_score = score
@@ -54,7 +53,6 @@ def minimax(moves, game_state, board, turn, depth):
             color = game_state.get_turn()
             legal_moves = board.get_all_legal_moves(prev_move, color)
             score = minimax(legal_moves, game_state, board, color, depth-1)
-            print(score)
 
             if score < min_score:
                 min_score = score

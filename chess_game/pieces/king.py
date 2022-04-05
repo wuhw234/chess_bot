@@ -62,9 +62,7 @@ class King(Piece):
                         can_castle = False
                         break
                 if can_castle:
-                    print("can castle")
                     legal_moves.append((self.row, self.column, self.row, rook_column))
-                    print(legal_moves)
                     for column in range(king_column + 2, rook_column):
                         legal_moves.append((self.row, self.column, self.row, column))
             #kingside
@@ -87,7 +85,6 @@ class King(Piece):
                         can_castle = False
                         break
                 if can_castle:
-                    print("can castle")
                     legal_moves.append((self.row, self.column, self.row, rook_column))
                     for column in range(king_column - 2, rook_column, -1):
                         legal_moves.append((self.row, self.column, self.row, column))

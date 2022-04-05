@@ -68,7 +68,6 @@ class Board:
         symbol = piece.get_symbol()
         end_piece = self.get_square(end_row, end_column)
         if (start_row, start_column, end_row, end_column) not in legal_moves:
-            print(legal_moves, (start_row, start_column, end_row, end_column))
             return False
 
         #valid moves _____________________________________________________________________
@@ -78,7 +77,6 @@ class Board:
 
         elif not self.is_occupied(end_row, end_column) and piece.get_symbol()[1] == "p" and \
             start_column != end_column:
-            print("en passant available")
             if piece.get_symbol()[0] == "W":
                 enemy_pawn = self.get_square(end_row - 1, end_column)
                 self.add_piece(0, end_row - 1, end_column)
