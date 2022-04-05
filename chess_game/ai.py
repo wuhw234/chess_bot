@@ -9,10 +9,40 @@ def get_random_move(moves):
     return random.choice(moves)
     
 def get_best_move(moves, game_state, board, turn):
-    #bug of function continuing to run even after engine makes move
     random.shuffle(moves)
-    negamax(moves, game_state, board, turn, DEPTH)
+    negamax_alphabeta(moves, game_state, board, turn, DEPTH, -math.inf, math.inf)
     return next_move
+
+def negamax_alphabeta(moves, game_state, board, turn, depth, alpha, beta):
+    global next_move
+    #always assumes opponent plays the best move
+    multiplier = 1 if turn == "W" else -1
+    if depth == 0:
+        return multiplier * evaluate(game_state)
+
+    max_score = -math.inf
+    for move in moves:
+        start_row, start_column = move[0], move[1]
+        end_row, end_column = move[2], move[3]
+        piece = board.get_square(start_row, start_column)
+        game_state.log_move(piece, start_row, start_column, end_row, end_column)
+
+        prev_move = game_state.get_prev_move()
+        color = game_state.get_turn()
+        legal_moves = board.get_all_legal_moves(prev_move, color)
+        score = -negamax_alphabeta(legal_moves, game_state, board, color, depth-1, -beta, -alpha)
+        if score >= max_score:
+            max_score = score
+            if depth == DEPTH:
+                next_move = move
+
+        game_state.undo_move()
+        if max_score > alpha: #pruning
+            alpha = max_score
+        if alpha >= beta:
+            break
+
+    return max_score
 
 def negamax(moves, game_state, board, turn, depth):
     global next_move
@@ -40,7 +70,6 @@ def negamax(moves, game_state, board, turn, depth):
 
         game_state.undo_move()
 
-    print(max_score)
     return max_score
 
 

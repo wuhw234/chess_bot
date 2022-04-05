@@ -17,6 +17,7 @@ class King(Piece):
         possible_moves = [(self.row, self.column, square[0], square[1]) for square in end_squares]
         opposite_color = "B" if self.color == "W" else "W"
         
+        #maybe make this more efficient
         enemy_threatened_squares = self.board.get_threatened_squares(opposite_color)
         legal_moves = self.filter_checks_and_pins(king, possible_moves)
 
@@ -112,8 +113,9 @@ class King(Piece):
         # if (self.row, self.column) in threatened_squares:
         #     return True
         # return False
-        straight_offsets = [(1, 0), (0, 1), (0, -1), (-1, 0)]
         king_row, king_column = self.row, self.column
+
+        straight_offsets = [(1, 0), (0, 1), (0, -1), (-1, 0)]
         for row_offset, column_offset in straight_offsets:
             curr_row, curr_column = king_row + row_offset, king_column + column_offset
             while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
@@ -123,7 +125,7 @@ class King(Piece):
                         break
                     else:
                         if square.get_symbol()[1] == "k":
-                            if abs(king_row - curr_row + king_column - curr_column) <= 2:
+                            if abs(king_row - curr_row) <= 1 and abs(king_column - curr_column) <= 1:
                                 return True
                         #if opposite color and its a piece that can attack vertically
                         elif square.get_symbol()[1] in "rq":
@@ -133,7 +135,6 @@ class King(Piece):
                 curr_row, curr_column = curr_row + row_offset, curr_column + column_offset
                 
         diagonal_offsets = [(1, 1), (1, -1),(-1, 1), (-1, -1)]
-        king_row, king_column = self.row, self.column
         for row_offset, column_offset in diagonal_offsets:
             curr_row, curr_column = king_row + row_offset, king_column + column_offset
             while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
@@ -144,7 +145,7 @@ class King(Piece):
                     else:
                         #if opposite color and its a piece that can attack vertically
                         if square.get_symbol()[1] == "k":
-                            if abs(king_row - curr_row + king_column - curr_column) <= 2:
+                            if abs(king_row - curr_row) <= 1 and abs(king_column - curr_column) <= 1:
                                 return True
                         elif square.get_symbol()[1] == "p":
                             if self.color == "W":
@@ -165,7 +166,6 @@ class King(Piece):
                 curr_row, curr_column = curr_row + row_offset, curr_column + column_offset
 
         knight_offsets =  [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
-        king_row, king_column = self.row, self.column
         for row_offset, column_offset in knight_offsets:
             curr_row, curr_column = king_row + row_offset, king_column + column_offset
             if curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
@@ -176,9 +176,10 @@ class King(Piece):
                         if square.get_symbol()[1] == "n":
                             return True
                         else:
-                            break
+                            continue
 
         return False
+        
     def get_rooks(self):
         return self.rooks
 

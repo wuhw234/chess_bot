@@ -105,7 +105,7 @@ def main():
                 elif e.type == p.KEYDOWN:
                     if e.key == p.K_z:
                         game_state.undo_move()
-                elif e.type == p.MOUSEBUTTONDOWN and player_color == curr_turn:
+                elif e.type == p.MOUSEBUTTONDOWN:  #and player_color == curr_turn:
                     #allows for AI to move
                     location = p.mouse.get_pos()
                     #convert clicked location into coordinates
@@ -157,26 +157,26 @@ def main():
 
                         selected_square = ()
                         player_clicks = []
-            if player_color != curr_turn:
-                #have AI make a move
-                prev_move = game_state.get_prev_move()
-                turn = game_state.get_turn()
-                legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
-                move = get_best_move(legal_moves, game_state, board, turn)
-                start_row, start_column, end_row, end_column = move
-                piece = board.get_square(start_row, start_column)
-                game_state.log_move(piece, start_row, start_column, end_row, end_column)
-                if game_state.is_stalemate():
-                    print("stalemate")
-                    game_active = False
-                if game_state.is_checkmate():
-                    if game_state.get_turn() == "W":
-                        print("Black wins by checkmate")
-                    else:
-                        print("White wins by checkmate")
-                    game_active = False
-                elif game_state.is_check():
-                    print("check!")
+            # if player_color != curr_turn:
+            #     #have AI make a move
+            #     prev_move = game_state.get_prev_move()
+            #     turn = game_state.get_turn()
+            #     legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
+            #     move = get_best_move(legal_moves, game_state, board, turn)
+            #     start_row, start_column, end_row, end_column = move
+            #     piece = board.get_square(start_row, start_column)
+            #     game_state.log_move(piece, start_row, start_column, end_row, end_column)
+            #     if game_state.is_stalemate():
+            #         print("stalemate")
+            #         game_active = False
+            #     if game_state.is_checkmate():
+            #         if game_state.get_turn() == "W":
+            #             print("Black wins by checkmate")
+            #         else:
+            #             print("White wins by checkmate")
+            #         game_active = False
+            #     elif game_state.is_check():
+            #         print("check!")
 
 
             draw_game_state(player_color, screen, game_state, selected_square)
