@@ -12,7 +12,9 @@ class King(Piece):
         self.rooks = rooks
 
     def generate_legal_moves(self, king, prev_move):
-        possible_moves = self.threatened_squares()
+        #bug where king can move right next to another king
+        end_squares = self.threatened_squares()
+        possible_moves = [(self.row, self.column, square[0], square[1]) for square in end_squares]
         opposite_color = "B" if self.color == "W" else "W"
         
         enemy_threatened_squares = self.board.get_threatened_squares(opposite_color)
@@ -21,7 +23,6 @@ class King(Piece):
         if not (self.row, self.column) in enemy_threatened_squares and not king.get_has_moved():
             self.castle(king, legal_moves, enemy_threatened_squares)
             
-
         return legal_moves
 
     def castle(self, king, legal_moves, enemy_threatened_squares):
@@ -101,9 +102,9 @@ class King(Piece):
                 continue
             elif self.board.is_occupied(curr_row, curr_column):
                 if self.board.get_piece_color(curr_row, curr_column) != self.color:
-                    possible_moves.append((self.row, self.column, curr_row, curr_column))
+                    possible_moves.append((curr_row, curr_column))
             else:
-                possible_moves.append((self.row, self.column, curr_row, curr_column))
+                possible_moves.append((curr_row, curr_column))
 
         return possible_moves
 

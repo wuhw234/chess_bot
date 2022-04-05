@@ -255,7 +255,6 @@ def highlight_squares(player_color, screen, game_state, selected_square):
         screen.blit(s, (column_pixel, row_pixel))
 
         s.fill(p.Color('yellow'))
-        print(legal_moves)
         for start_r, start_c, end_row, end_column in legal_moves:
             end_row, end_column = convert_coords_to_pixels(player_color, end_row, end_column)
             screen.blit(s, (end_column, end_row))
