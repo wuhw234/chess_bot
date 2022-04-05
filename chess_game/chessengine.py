@@ -160,8 +160,9 @@ def main():
             if player_color != curr_turn:
                 #have AI make a move
                 prev_move = game_state.get_prev_move()
+                turn = game_state.get_turn()
                 legal_moves = board.get_all_legal_moves(prev_move, curr_turn)
-                move = get_best_move(legal_moves, game_state, board, player_color)
+                move = get_best_move(legal_moves, game_state, board, turn)
                 start_row, start_column, end_row, end_column = move
                 piece = board.get_square(start_row, start_column)
                 game_state.log_move(piece, start_row, start_column, end_row, end_column)
