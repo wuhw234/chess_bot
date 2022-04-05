@@ -10,7 +10,8 @@ def get_random_move(moves):
     
 def get_best_move(moves, game_state, board, turn):
     random.shuffle(moves)
-    negamax_alphabeta(moves, game_state, board, turn, DEPTH, -math.inf, math.inf)
+    negamax(moves, game_state, board, turn, DEPTH)
+    # negamax_alphabeta(moves, game_state, board, turn, DEPTH, -math.inf, math.inf)
     return next_move
 
 def negamax_alphabeta(moves, game_state, board, turn, depth, alpha, beta):
