@@ -122,8 +122,11 @@ class King(Piece):
                     if square.get_color() == self.color:
                         break
                     else:
+                        if square.get_symbol()[1] == "k":
+                            if abs(king_row - curr_row + king_column - curr_column) <= 2:
+                                return True
                         #if opposite color and its a piece that can attack vertically
-                        if square.get_symbol()[1] in "krq":
+                        elif square.get_symbol()[1] in "rq":
                             return True
                         else:
                             break
@@ -140,7 +143,10 @@ class King(Piece):
                         break
                     else:
                         #if opposite color and its a piece that can attack vertically
-                        if square.get_symbol()[1] == "p":
+                        if square.get_symbol()[1] == "k":
+                            if abs(king_row - curr_row + king_column - curr_column) <= 2:
+                                return True
+                        elif square.get_symbol()[1] == "p":
                             if self.color == "W":
                                 if curr_row == king_row + 1 and abs(curr_column - king_column) == 1:
                                     return True
