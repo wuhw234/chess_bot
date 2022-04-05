@@ -54,7 +54,6 @@ class GameState:
                 if color != self.turn:
                     symbol = end_square.get_symbol()[1]
                     piece_value = piece_values[symbol]
-                    print("added", piece_value)
                     self.score += multiplier * piece_value
             #end row and end column could be different depending on castling
             if piece.get_symbol()[1] == "k":
@@ -113,7 +112,6 @@ class GameState:
                 if end_piece:
                     value = multiplier * piece_values[end_piece.get_symbol()[1]]
                     self.score -= value
-                    print("removed value", value)
                 return True
             #en passant
             else:
@@ -125,7 +123,6 @@ class GameState:
         if end_piece:
             value = multiplier * piece_values[end_piece.get_symbol()[1]]
             self.score -= value
-            print("removed value", value)
 
         start_piece.get_prev_location()
 

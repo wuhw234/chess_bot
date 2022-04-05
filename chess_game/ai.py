@@ -10,6 +10,7 @@ def get_random_move(moves):
     
 def get_best_move(moves, game_state, board, turn):
     #bug of function continuing to run even after engine makes move
+    random.shuffle(moves)
     minimax(moves, game_state, board, turn, DEPTH)
     return next_move
 
@@ -33,7 +34,7 @@ def minimax(moves, game_state, board, turn, depth):
             legal_moves = board.get_all_legal_moves(prev_move, color)
             score = minimax(legal_moves, game_state, board, color, depth-1)
 
-            if score > max_score:
+            if score >= max_score:
                 max_score = score
                 if depth == DEPTH:
                     next_move = move
@@ -55,7 +56,7 @@ def minimax(moves, game_state, board, turn, depth):
             legal_moves = board.get_all_legal_moves(prev_move, color)
             score = minimax(legal_moves, game_state, board, color, depth-1)
 
-            if score < min_score:
+            if score <= min_score:
                 min_score = score
                 if depth == DEPTH:
                     next_move = move
@@ -72,7 +73,6 @@ def evaluate(game_state):
         return 0
     else:
         score = game_state.evaluate()
-        print(score)
         return score
     # color = game_state.get_turn()
     # multiplier = -1 if color == "W" else 1

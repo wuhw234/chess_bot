@@ -12,6 +12,7 @@ class King(Piece):
         self.rooks = rooks
 
     def generate_legal_moves(self, king, prev_move):
+        #glitch where king can take a defended piece
         end_squares = self.threatened_squares()
         possible_moves = [(self.row, self.column, square[0], square[1]) for square in end_squares]
         opposite_color = "B" if self.color == "W" else "W"
@@ -151,7 +152,7 @@ class King(Piece):
                                 else:
                                     break
 
-                        elif square.get_symbol()[1] in "bq":
+                        elif square.get_symbol()[1] in "kbq":
                             return True
                         else:
                             break
