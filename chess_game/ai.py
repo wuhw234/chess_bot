@@ -9,6 +9,7 @@ def get_random_move(moves):
     return random.choice(moves)
     
 def get_best_move(moves, game_state, board, turn):
+    #bug of function continuing to run even after engine makes move
     minimax(moves, game_state, board, turn, DEPTH)
     return next_move
 
@@ -17,7 +18,7 @@ def minimax(moves, game_state, board, turn, depth):
     global next_move
     #always assumes opponent plays the best move
     if depth == 0:
-        return evaluate(board, game_state)
+        return evaluate(game_state)
 
     if turn == "W":
         max_score = -math.inf
@@ -63,24 +64,33 @@ def minimax(moves, game_state, board, turn, depth):
 
         return min_score
 
-def evaluate(board, game_state):
-    color = game_state.get_turn()
-    multiplier = -1 if color == "W" else 1
+def evaluate(game_state):
+    multiplier = -1 if game_state.get_turn() == "W" else 1
     if game_state.is_checkmate():
         return multiplier * math.inf
     elif game_state.is_stalemate():
         return 0
     else:
-        piece_values = {"k": 0, "q": 9, "r": 5, "b": 3, "n": 3, "p": 1}
-        score = 0
-        for i in range(0, 8):
-            for j in range(0, 8):
-                square = board.get_square(i, j)
-                if square:
-                    symbol = square.get_symbol()
-                    if symbol[0] == "W":
-                        score += piece_values[symbol[1]]
-                    else:
-                        score -= piece_values[symbol[1]]
-
+        score = game_state.evaluate()
+        print(score)
         return score
+    # color = game_state.get_turn()
+    # multiplier = -1 if color == "W" else 1
+    # if game_state.is_checkmate():
+    #     return multiplier * math.inf
+    # elif game_state.is_stalemate():
+    #     return 0
+    # else:
+    #     piece_values = {"k": 0, "q": 9, "r": 5, "b": 3, "n": 3, "p": 1}
+    #     score = 0
+    #     for i in range(0, 8):
+    #         for j in range(0, 8):
+    #             square = board.get_square(i, j)
+    #             if square:
+    #                 symbol = square.get_symbol()
+    #                 if symbol[0] == "W":
+    #                     score += piece_values[symbol[1]]
+    #                 else:
+    #                     score -= piece_values[symbol[1]]
+
+    #     return score

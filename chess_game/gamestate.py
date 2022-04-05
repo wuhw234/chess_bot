@@ -16,6 +16,7 @@ class GameState:
         self.turn = "W"
         self.board = Board()
         self.movelog = []
+        self.score = 0
         #if memory becomes a problem, make it so that movelog only contains most recent
 
     def get_turn(self):
@@ -30,6 +31,7 @@ class GameState:
         self.turn = "W"
 
     def log_move(self, piece, start_row, start_column, end_row, end_column):
+        piece_values = {"k": 0, "q": 9, "r": 5, "b": 3, "n": 3, "p": 1}
         prev_move = None if not self.movelog else self.movelog[-1]
         start_piece = piece
         end_square = self.board.get_square(end_row, end_column)
@@ -40,6 +42,20 @@ class GameState:
         restore_piece = self.board.make_move(prev_move, piece, start_row, 
                                           start_column, end_row, end_column)
         if restore_piece:
+            multiplier = 1 if self.turn == "W" else -1
+            if restore_piece == 1:
+                pass
+            elif restore_piece.get_symbol()[1] == "p":
+                self.score += multiplier * 1 
+            elif restore_piece.get_symbol()[1] == "q":
+                self.score += multiplier * 8
+            if end_square: #capture enemy pieces
+                color = end_square.get_color()[0]
+                if color != self.turn:
+                    symbol = end_square.get_symbol()[1]
+                    piece_value = piece_values[symbol]
+                    print("added", piece_value)
+                    self.score += multiplier * piece_value
             #end row and end column could be different depending on castling
             if piece.get_symbol()[1] == "k":
                 end_row, end_column = piece.get_location()
@@ -59,6 +75,10 @@ class GameState:
         #make sure to undo move in prev_moves array
         if not self.movelog:
             return False
+
+        self.turn = "W" if self.turn == "B" else "B"
+        multiplier = 1 if self.turn == "W" else -1
+        piece_values = {"k": 0, "q": 9, "r": 5, "b": 3, "n": 3, "p": 1}
         prev_move = self.movelog.pop()
         start_piece, end_piece = prev_move[0]
         start_row, start_column = prev_move[1][0]
@@ -79,31 +99,37 @@ class GameState:
             rook_row, rook_column = restore_piece.get_prev_location()
             self.board.add_piece(restore_piece, rook_row, rook_column)
             start_piece.get_prev_location()
-            
-            self.turn = "W" if self.turn == "B" else "B"
 
             return True
 
         #en passant and promotion
         elif restore_piece.get_symbol()[1] == "p":
             if end_row == 7 or end_row == 0:
+                self.score -= multiplier * 8
                 pawn_row, pawn_column = restore_piece.get_prev_location()
                 self.board.add_piece(0, end_row, end_column)
                 self.board.add_piece(restore_piece, pawn_row, pawn_column)
                 self.board.add_piece(end_piece, end_row, end_column)
-                self.turn = "W" if self.turn == "B" else "B"
+                if end_piece:
+                    value = multiplier * piece_values[end_piece.get_symbol()[1]]
+                    self.score -= value
+                    print("removed value", value)
                 return True
             #en passant
             else:
+                self.score -= multiplier * 1
                 self.board.add_piece(restore_piece, restore_piece.get_row(), restore_piece.get_column())
         
         self.board.add_piece(start_piece, start_row, start_column)
         self.board.add_piece(end_piece, end_row, end_column)
+        if end_piece:
+            value = multiplier * piece_values[end_piece.get_symbol()[1]]
+            self.score -= value
+            print("removed value", value)
+
         start_piece.get_prev_location()
 
-        self.turn = "W" if self.turn == "B" else "B"
         return True
-
 
     def get_prev_move(self):
         if not self.movelog:
@@ -112,6 +138,9 @@ class GameState:
 
     def get_board(self):
         return self.board
+
+    def evaluate(self):
+        return self.score
 
     def is_check(self):
         if self.turn == "W":

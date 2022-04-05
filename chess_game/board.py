@@ -56,6 +56,9 @@ class Board:
 
     #     return score
 
+    def new_make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
+        pass
+
     def make_move(self, prev_move, piece, start_row, start_column, end_row, end_column):
         #check for invalid moves
         
@@ -147,6 +150,51 @@ class Board:
             piece.add_prev_location(piece.get_row(), piece.get_column())
             self.add_piece(piece, end_row, end_column)
             return 1
+
+    def checks_and_pins(self, turn):
+        pins = []
+        checks = []
+        in_check = False
+        king = self.get_king(self, turn)
+        enemy_color = "B" if turn == "W" else "W"
+        king_row, king_column = king.get_location()
+
+        offsets = [(1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1)]
+        for row_offset, column_offset in offsets:
+            pinned_piece = None
+            curr_row, curr_column = king_row + row_offset, king_column + column_offset
+            while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
+                square = self.get_square(curr_row, curr_column)
+                if square:
+                    color, symbol = square.get_symbol()[0], square.get_symbol()[1]
+                    if pinned_piece:
+                        #then there is no longer a pin
+                        if color == turn:
+                            break
+                        #if enemy piece, possible pin
+                        else:
+                            #if vertical/horizontal
+                            if abs(row_offset + column_offset) == 1:
+                                #if its a piece that can attack vertically (maybe king??) add pin
+                                if symbol == "q" or symbol == "r":
+                                    pins.append(pinned_piece)
+                                    break
+                                else: #cannot be a pin
+                                    break
+                            #if diagonal
+                            else:
+                                pass
+                    #if king is exposed
+                    else:
+                        #possible pin
+                        if color == turn:
+                            pinned_piece = (curr_row, curr_column)
+                        #possible checks
+                        else:
+                            pass
+                curr_row, curr_column = curr_row + row_offset, curr_column + column_offset
+                
+            
 
     def get_king(self, color):
         if color == "W":

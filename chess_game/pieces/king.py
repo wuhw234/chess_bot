@@ -12,7 +12,6 @@ class King(Piece):
         self.rooks = rooks
 
     def generate_legal_moves(self, king, prev_move):
-        #bug where king can move right next to another king
         end_squares = self.threatened_squares()
         possible_moves = [(self.row, self.column, square[0], square[1]) for square in end_squares]
         opposite_color = "B" if self.color == "W" else "W"
@@ -106,13 +105,73 @@ class King(Piece):
         return possible_moves
 
     def is_attacked(self):
-        opposite_color = "B" if self.color == "W" else "W"
-        threatened_squares = self.board.get_threatened_squares(opposite_color)
+        # opposite_color = "B" if self.color == "W" else "W"
+        # threatened_squares = self.board.get_threatened_squares(opposite_color)
 
-        if (self.row, self.column) in threatened_squares:
-            return True
+        # if (self.row, self.column) in threatened_squares:
+        #     return True
+        # return False
+        straight_offsets = [(1, 0), (0, 1), (0, -1), (-1, 0)]
+        king_row, king_column = self.row, self.column
+        for row_offset, column_offset in straight_offsets:
+            curr_row, curr_column = king_row + row_offset, king_column + column_offset
+            while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
+                square = self.board.get_square(curr_row, curr_column)
+                if square:
+                    if square.get_color() == self.color:
+                        break
+                    else:
+                        #if opposite color and its a piece that can attack vertically
+                        if square.get_symbol()[1] in "krq":
+                            return True
+                        else:
+                            break
+                curr_row, curr_column = curr_row + row_offset, curr_column + column_offset
+                
+        diagonal_offsets = [(1, 1), (1, -1),(-1, 1), (-1, -1)]
+        king_row, king_column = self.row, self.column
+        for row_offset, column_offset in diagonal_offsets:
+            curr_row, curr_column = king_row + row_offset, king_column + column_offset
+            while curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
+                square = self.board.get_square(curr_row, curr_column)
+                if square:
+                    if square.get_color() == self.color:
+                        break
+                    else:
+                        #if opposite color and its a piece that can attack vertically
+                        if square.get_symbol()[1] == "p":
+                            if self.color == "W":
+                                if curr_row == king_row + 1 and abs(curr_column - king_column) == 1:
+                                    return True
+                                else:
+                                    break
+                            else:
+                                if curr_row == king_row - 1 and abs(curr_column - king_column) == 1:
+                                    return True
+                                else:
+                                    break
+
+                        elif square.get_symbol()[1] in "bq":
+                            return True
+                        else:
+                            break
+                curr_row, curr_column = curr_row + row_offset, curr_column + column_offset
+
+        knight_offsets =  [(2, 1), (2, -1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
+        king_row, king_column = self.row, self.column
+        for row_offset, column_offset in knight_offsets:
+            curr_row, curr_column = king_row + row_offset, king_column + column_offset
+            if curr_row >= 0 and curr_row < 8 and curr_column >= 0 and curr_column < 8:
+                square = self.board.get_square(curr_row, curr_column)
+                if square:
+                    if square.get_color() != self.color:
+                        #if opposite color and its a knight
+                        if square.get_symbol()[1] == "n":
+                            return True
+                        else:
+                            break
+
         return False
-
     def get_rooks(self):
         return self.rooks
 
