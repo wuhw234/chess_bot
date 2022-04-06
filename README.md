@@ -1,4 +1,4 @@
-# Reddit Recap Bot
+# Chess Bot
 A program that allows you to play chess against an AI in both standard chess and chess960.
 
 # Running the bot
